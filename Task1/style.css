@@ -1,0 +1,57 @@
+body {
+    margin: 0;
+}
+
+.main {
+    width: 457px;
+    height: 138px;
+    padding: 4px;
+}
+
+.profile-pic {
+    width: 130px;
+    height: 130px;
+    float: left;
+    margin-right: 14px;
+}
+
+.username {
+    margin-top: 10px;
+    color: #000000; 
+    font-size: 20px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    margin-bottom: 14px;
+}
+
+.tweet-text {
+    color: #000000; 
+    font-size: 20px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    margin-top: 0px;
+    margin-bottom: 24px;
+}
+
+.tweet-info{
+    margin-top: 0px;
+    display: flex;
+    color: #858991;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 14px;
+    opacity: 0.6;
+}
+
+.nums {
+    margin-top: 0;
+    margin-right: 20px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
