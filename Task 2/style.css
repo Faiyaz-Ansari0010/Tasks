@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-.container{
+.container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: 50px 200px 200px 70px;
@@ -10,7 +9,7 @@
     margin-top: 200px;
 }
 
-.container > div {
+.container>div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,38 +17,33 @@
     color: #ffeead;
 }
 
-.header{
+.header {
     background-image: linear-gradient(to bottom right, #6e55da, #8e7be2);
     grid-column-start: 1;
     grid-column-end: -1;
 }
 
-.sidebar{
+.sidebar {
     background-image: linear-gradient(to top right, #29a49d, #3cdad2);
     grid-row-start: 2;
     grid-row-end: 4;
 }
 
-.content-1{
+.content-1 {
     background-image: linear-gradient(to bottom right, #645bdc, #34cfe2);
     grid-column-start: 2;
     grid-column-end: -1;
 }
 
-.content-2{
+.content-2 {
     background-image: linear-gradient(to bottom right, #655adc, #36d2e0);
 }
 
-.content-3{
+.content-3 {
     background-image: linear-gradient(to bottom right, #655adc, #36d2e0);
 }
 
-.footer{
-    background-image: linear-gradient(to bottom right, #6e55da, #8e7be2);
-    grid-column-start: 1;
-    grid-column-end: -1;
-=======
-.container{
+.container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: 50px 200px 200px 70px;
@@ -60,7 +54,7 @@
     margin-top: 200px;
 }
 
-.container > div {
+.container>div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -68,35 +62,34 @@
     color: #ffeead;
 }
 
-.header{
+.header {
     background-image: linear-gradient(to bottom right, #6e55da, #8e7be2);
     grid-column-start: 1;
     grid-column-end: -1;
 }
 
-.sidebar{
+.sidebar {
     background-image: linear-gradient(to top right, #29a49d, #3cdad2);
     grid-row-start: 2;
     grid-row-end: 4;
 }
 
-.content-1{
+.content-1 {
     background-image: linear-gradient(to bottom right, #645bdc, #34cfe2);
     grid-column-start: 2;
     grid-column-end: -1;
 }
 
-.content-2{
+.content-2 {
     background-image: linear-gradient(to bottom right, #655adc, #36d2e0);
 }
 
-.content-3{
+.content-3 {
     background-image: linear-gradient(to bottom right, #655adc, #36d2e0);
 }
 
-.footer{
+.footer {
     background-image: linear-gradient(to bottom right, #6e55da, #8e7be2);
     grid-column-start: 1;
     grid-column-end: -1;
->>>>>>> c30931a53faa5e5f0b9f7998f34d2fd6f382a01f
 }
