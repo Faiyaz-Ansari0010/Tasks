@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+
+    <div class="header">
+      <img class="header-logo" src="header-logo.svg" alt="Quantum-logo" />
+    </div>
+
+    <div class="main-content-container">
+      <div class="main-content">
+
+        <div class="title-line">
+
+          <div class="back-button">
+              <a href="#">
+                  <img src="back-button.svg" alt="back-button">
+              </a>
+          </div>
+
+          <div class="title">
+              Log in with Quantum
+          </div>
+
+        </div>
+
+        <div class="select-user-type">
+
+          <label class="user-type-item-1">
+              <input type="radio" name="user" id="district" checked>
+              <div class="radio-img"></div>District
+          </label>
+
+          <label class="user-type-item-2">
+            <input type="radio" name="user" id="school">
+            <div class="radio-img"></div>Independent school
+        </label>
+          
+        </div>
+
+        <div class="select-state-container">
+
+          <label class="state" for="state">State*</label>
+            <div class="select-list-container">
+              <select class="select-list" id="state" required>
+                <option value="Alabama" selected>Alabama</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Arizona">Arizona</option>
+              </select>
+              <div class="arrow-down-img">
+                <img src="arrow-down.svg" alt="dropdown-arrow">
+              </div>
+            </div>
+          
+        </div>
+
+        <div class="select-state-container">
+
+          <label class="state" for="state">District*</label>
+            <div class="select-list-container">
+              <select class="select-list" id="state" required>
+                <option value="Alabama School District" selected>Alabama School District</option>
+                <option value="Georgia School District">Georgia School District</option>
+                <option value="Arizona School District">Arizona School District</option>
+              </select>
+              <div class="arrow-down-img">
+                <img src="arrow-down.svg" alt="dropdown-arrow">
+              </div>
+            </div>
+          
+        </div>
+
+        <div class="username-container">
+
+          <div class="username-input">
+            <input type="text" placeholder="Username/Email ID*" required>
+          </div> 
+
+          <div class="forgot-username">FORGOT USERNAME?</div>
+          
+        </div>
+
+        <div class="password-container">
+
+          <div class="username-input">
+
+            <input type="password" placeholder="Password*" required>
+              
+            <div class="preview-icon">
+                <!-- <img src="preview.svg" alt="preview-icon"> -->
+            </div>
+
+          </div> 
+
+          <div class="forgot-username">FORGOT PASSWORD?</div>
+          
+        </div>
+
+        <div class="checkbox-container">
+
+          <label class="remember-me" for="remember-me">
+            <input type="checkbox" id="remember-me">
+            <div class="remember-text">Remember Me</div>
+          </label>
+
+        </div>
+
+          <button class="btn">LOG IN</button>
+
+      </div>
+
+    </div>
+
+    <div class="contact">
+      <p>About</p> <p class="separate">|</p> <p>Contact Us</p>
+    </div>
+
+    <div class="footer">
+      <img src="footer-logo.svg" alt="footer-logo">
+      <p class="separator">|</p>
+      <p>Copyright &copy 2020-2021 
+        <span>Zeus Systems Pvt. Ltd.</span>
+         All rights reserved.</p> 
+    </div>
+
+  </body>
+</html>
