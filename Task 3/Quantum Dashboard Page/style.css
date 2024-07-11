@@ -1,0 +1,13 @@
+main {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(476px, 571px));
+    grid-template-rows: 246px 246px;
+    grid-auto-rows: 246px;
+    grid-gap: 10px;
+} */
