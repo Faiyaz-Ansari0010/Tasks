@@ -195,7 +195,7 @@ input[type="radio"]:checked~.radio-img {
 
 .remember-me>input {
     appearance: none;
-    background: url('checkbox-checked.svg');
+    background: url('checkbox-unchecked.svg');
     width: 24px;
     height: 26px;
     margin-right: 5px;
@@ -203,7 +203,7 @@ input[type="radio"]:checked~.radio-img {
 }
 
 input[type="checkbox"]:checked {
-    background: url('checkbox-unchecked.svg');
+    background: url('checkbox-checked.svg');
     width: 24px;
     height: 26px;
 }
