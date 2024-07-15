@@ -13,14 +13,6 @@ body {
     background-color: #EEEEEE;
 }
 
-/* .container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(476px, 571px));
-    grid-template-rows: 246px 246px;
-    grid-auto-rows: 246px;
-    grid-gap: 10px;
-} */
-
 .profile-icon {
     width: 35px;
     height: 37px;
@@ -208,10 +200,188 @@ li a {
     font-weight: 500;
 }
 
+.course-nav-container {
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 976px;
+    height: 28px;
+    display: flex;
+    margin-bottom: 17px;
+}
+
+.num-courses {
+    font-size: 12px;
+    width: 160px;
+    height: 15px;
+}
+
+.sort-by-container {
+    display: flex;
+    width: 280px;
+    height: 28px;
+    margin-left: 550px;
+}
+
+.course-name-wrapper {
+    display: flex;
+    margin-left: 5px;
+    height: 28px;
+    width: 170px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.sort-by {
+    font-size: 12px;
+    width: 50px;
+    height: 15px;
+    display: flex;
+    position: relative;
+    top: 5px;
+}
+
+.course-name {
+    font-size: 16px;
+    width: 140px;
+    height: 20px;
+    font-weight: 600px;
+}
+
+.sort-icon {
+    display: flex;
+    width: 12px;
+    height: 24px;
+    margin-left: 25px;
+}
+
+.arrow-down {
+    width: 30px;
+    height: 24px;
+    margin-left: 45px;
+}
+
+.border-seperator {
+    border-bottom: 1px solid #000000;
+    width: 976px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.12;
+}
+
+.box-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(476px, 1fr));
+    grid-template-rows: 246px 246px;
+    justify-content: center;
+    grid-gap: 24px;
+    margin-top: 16px;
+    margin-left: 24px;
+    margin-right: 24px;
+}
+
+.box-container>div {
+    background-color: white;
+}
+
+.first-box-container {
+    padding: 24px 0 0 24px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.first-box-top {
+    display: flex;
+}
+
+.class-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.main-image {
+    margin-right: 16px;
+    width: 132px;
+    height: 157px;
+}
+
+.heading {
+    display: flex;
+}
+
+.heading>p {
+    font-weight: 600;
+    margin-top: 0px;
+}
+
+.favourite-icon {
+    position: absolute;
+    left: 444px;
+    bottom: 205px;
+}
+
+/* <div class="first-box-container">
+
+            <div class="first-box-top">
+
+                <img src="imageMask1.png" alt="image-mask-1">
+
+                <div class="class-info">
+
+                    <div class="heading">Acceleration</div>
+
+                        <img class="favourite-icon" src="favourite.svg" alt="favourite-icon">
+                    
+                    <div class="subject-grade">
+                        <span>Physics</span> 
+                        <span class="seperation">|</span> 
+                        <span>Grade 7 +2</span></span>
+                    </div>
+
+
+                    <div class="chapters">
+                        <span>4</span> 
+                        <span>Units</span> 
+                        <span>18</span>
+                        <span>Lessons</span> 
+                        <span>24</span> 
+                        <span>Topics</span>
+                    </div>
+
+                    <div class="class-name">
+                        <span>Mr. Frank's Class B</span>
+                        <img src="arrow-down.svg" alt="dropdown icon">
+                    </div>
+
+                    <div class="class-detail">
+                        <span>50 Students</span> 
+                        <span class="seperation">|</span> 
+                        <span>21-Jan-2020 - 21-Aug-2020</span>
+                    </div>
+
+                </div>
+                
+            </div>
+
+            <div box-inner-border></div>
+
+            <div class="class-stats">
+                <img src="preview.svg" alt="preview">
+                <img src="manage course.svg" alt="manage-course">
+                <img src="grade submissions.svg" alt="grade-submissions">
+                <img src="reports.svg" alt="reports">
+            </div>
+
+        </div> */
+
+
+
+
 @media only screen and (max-width: 1024px) {
     .hamburger-icon {
         display: none;
     }
+
 }
 
 @media only screen and (max-width: 768px) {
@@ -221,5 +391,18 @@ li a {
 
     .hamburger-icon {
         display: inline-block;
+    }
+
+    .upper-tab {
+        width: 930px;
+        margin-left: 20px;
+    }
+
+
+    .box-container {
+        margin-top: 24px;
+        grid-template-columns: 571px;
+        grid-template-rows: repeat(4, 246px);
+        margin-left: 250px;
     }
 }
