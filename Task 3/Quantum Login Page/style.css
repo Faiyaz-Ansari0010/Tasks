@@ -60,9 +60,9 @@ body {
 }
 
 .title {
-    margin-top: 20px;
     width: 250px;
     height: 30px;
+    margin-top: 20px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -82,7 +82,6 @@ body {
     display: flex;
     align-items: center;
     cursor: pointer;
-
 }
 
 .user-type-item-2 {

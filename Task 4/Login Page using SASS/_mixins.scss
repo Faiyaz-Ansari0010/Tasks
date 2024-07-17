@@ -1,0 +1,65 @@
+@font-face {
+    font-family: Quicksand;
+    src: url("Quicksand.ttf");
+}
+
+// Main-Page
+
+$bg-color: #EEEEEE;
+$main-font: Quicksand;
+
+@mixin font($size: auto, $font-color: auto, $weight: auto) {
+    font-size: $size;
+    font-weight: $weight;
+    color: $font-color;
+}
+
+@mixin flex-type($direction) {
+    display: flex;
+    flex-direction: $direction;
+}
+
+@mixin dimensions($width: auto, $height: auto) {
+    width: $width;
+    height: $height;
+}
+
+@mixin position($pos-type, $top: auto, $left: auto, $bottom: auto, $right: auto) {
+    position: $pos-type;
+    left: $left;
+    right: $right;
+    top: $top;
+    bottom: $bottom;
+}
+
+@mixin margins($top: auto, $left: auto, $bottom: auto, $right: auto) {
+    margin-top: $top;
+    margin-bottom: $bottom;
+    margin-right: $right;
+    margin-left: $left;
+}
+
+@mixin padding($top: auto, $left: auto, $bottom: auto, $right: auto) {
+    padding-top: $top;
+    padding-bottom: $bottom;
+    padding-right: $right;
+    padding-left: $left;
+}
+
+@mixin justify($pos) {
+    justify-content: $pos;
+}
+
+@mixin align($pos) {
+    align-items: $pos;
+}
+
+@mixin bordered($width: auto, $color: auto) {
+    border: $width solid $color;
+}
+
+@mixin seperator($opacity, $margin-left, $margin-right) {
+    opacity: $opacity;
+    margin-left: $margin-left;
+    margin-right: $margin-right;
+}
