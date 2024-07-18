@@ -13,12 +13,6 @@ body {
     background-color: #EEEEEE;
 }
 
-.profile-icon {
-    width: 35px;
-    height: 37px;
-    border-radius: 50%;
-}
-
 .header {
     margin-top: 0px;
     margin-left: 0px;
@@ -85,7 +79,6 @@ li a {
     position: absolute;
     height: 20px;
     width: 20px;
-    letter-spacing: -0.5px;
     border-radius: 50%;
     text-align: center;
     left: 13px;
@@ -104,7 +97,6 @@ li a {
     position: absolute;
     height: 20px;
     width: 20px;
-    letter-spacing: -0.5px;
     border-radius: 50%;
     text-align: center;
     left: 13px;
@@ -114,8 +106,9 @@ li a {
 .profile-icon {
     position: relative;
     margin-right: 10px;
-    width: 32px;
-    height: 32px;
+    width: 35px;
+    height: 37px;
+    border-radius: 50%;
 }
 
 .profile-icon::after {
@@ -373,7 +366,6 @@ li a {
     display: flex;
     width: 428px;
     height: 40px;
-    margin-left: auto;
     margin-right: auto;
     align-items: end;
     margin-top: 16px;
@@ -530,7 +522,7 @@ p>span {
     }
 
     .border-seperator {
-        width: 910px;
+        width: 890px;
         margin-left: 20px;
     }
 
