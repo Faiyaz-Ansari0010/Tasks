@@ -72,7 +72,6 @@ document.getElementById("announcement-container").innerHTML = `
                 <p>${Class.dateTime}</p>
             </div>
          </div >
-
     `).join('')}
 
    
