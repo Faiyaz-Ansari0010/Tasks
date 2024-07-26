@@ -47,17 +47,15 @@ const classInfo = [
     }
 ]
 
-// function getImage(Class) {
-//     return `<img class="attachment-icon" src="attachment-icon.PNG">`
-// }
+document.getElementById("announcement-outer-container").innerHTML = `
 
-document.getElementById("announcement-container").innerHTML = `
+    <div id="announcement-container">
         ${classInfo.map(Class => `
         
         <div class="class-details">
             <div class="teacher-info">
-                <p>${Class.type}</p>
-                <p>${Class.teacher}</p>
+                <p class="teacher-type">${Class.type}</p>
+                <p class="teacher-name">${Class.teacher}</p>
                 <img class ="icon" src="${Class.statusIcon}">
             </div>
 
@@ -68,11 +66,34 @@ document.getElementById("announcement-container").innerHTML = `
             <div class="extra-details">
                 
                 ${Class.attachmentIcon ? `<img class="attachment-icon" src="attachment-icon.PNG">` : ''}
-                <p>${Class.extraInfo ? Class.extraInfo : ""}</p>
-                <p>${Class.dateTime}</p>
-            </div>
-         </div >
-    `).join('')}
+                <p class="extra-info">${Class.extraInfo ? Class.extraInfo : ""}</p>
+                <p class="date-time">${Class.dateTime}</p >
+            </div >
+        </div >
+    `).join('')
 
-   
+    }
+
+    </div>
+
+    <div class="announcement-buttons">
+        <div class="button-1">SHOW ALL</div>
+        <div class="button-2">CREATE NEW</div>
+    </div>
         `
+
+const element = document.getElementsByClassName("icon");
+
+for (let i = 0; i < element.length; i++) {
+
+    let text = element[i].getAttribute("src");
+    let box = document.getElementsByClassName("class-details");
+
+    if (text === "status-inactive-icon.PNG") {
+        box[i].style.backgroundColor = '#FFFFEE';
+    }
+
+    else {
+        box[i].style.backgroundColor = '#FFFFFF';
+    }
+}

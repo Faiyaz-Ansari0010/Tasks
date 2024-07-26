@@ -71,8 +71,12 @@ li a {
 }
 
 .alert-icon {
+    display: flex;
     position: relative;
     margin-right: 30px;
+    height: 56px;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
 .alert-icon::after {
@@ -85,12 +89,38 @@ li a {
     border-radius: 50%;
     text-align: center;
     left: 13px;
-    bottom: 13px;
+    bottom: 25px;
 }
 
 .announcement-menu {
+    display: flex;
+    height: 56px;
     position: relative;
     margin-right: 30px;
+    align-items: center;
+    margin-bottom: 8px;
+
+    &:hover {
+        cursor: pointer;
+
+        .announcement-menu::after {
+            content: none;
+        }
+
+        .announcement-icon {
+            background: #FFFFFF;
+        }
+
+
+        #announcement-container {
+            height: 562px;
+            transition: 1s;
+        }
+
+        .announcement-buttons {
+            display: flex;
+        }
+    }
 }
 
 .announcement-menu::after {
@@ -103,22 +133,51 @@ li a {
     border-radius: 50%;
     text-align: center;
     left: 13px;
-    bottom: 13px;
+    bottom: 25px;
+}
+
+#announcement-outer-container {
+    position: absolute;
+    top: 40px;
+    right: -10px;
+    width: 315px;
 }
 
 #announcement-container {
-    position: absolute;
+    /* position: absolute; */
     display: flex;
     flex-direction: column;
     background-color: white;
-    top: 40px;
-    right: -10px;
-    height: 582px;
-    width: 315px;
+    /* top: 40px;
+    right: -10px; */
+    /* height: 562px;
+    width: 315px; */
+    height: 0px;
     box-shadow: 0px 3px 6px #00000029;
     overflow: scroll;
+    overflow-x: hidden;
     /* height: 0px; */
 }
+
+/* .announcement-menu {
+    &:hover {
+        cursor: pointer;
+
+        .announcement-icon {
+            background: #FFFFFF;
+        }
+
+
+        #announcement-container {
+            height: 562px;
+            transition: 1s;
+        }
+
+        .announcement-buttons {
+            display: flex;
+        }
+    }
+} */
 
 .class-details {
     padding: 16px;
@@ -137,11 +196,44 @@ li a {
     display: flex;
 }
 
+.announcement-buttons {
+    display: flex;
+    background-color: white;
+    box-shadow: 0px 1px 6px #0000003D;
+    border-radius: 0px 0px 2px 2px;
+    width: 315px;
+    display: none;
+}
+
+.button-1 {
+    cursor: pointer;
+    font-size: 15px;
+    padding-left: 34px;
+    padding-right: 34px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-right: 1px solid rgba(0, 0, 0, 0.32);
+}
+
+.button-2 {
+    cursor: pointer;
+    font-size: 15px;
+    padding-left: 34px;
+    padding-right: 34px;
+    margin-top: 15px;
+}
+
+/* <div class="announcement-buttons">
+    <div>SHOW ALL</div>
+    <div>CREATE NEW</div>
+</div> */
+
 .profile-icon {
+    cursor: pointer;
     position: relative;
     margin-right: 10px;
-    width: 35px;
-    height: 37px;
+    width: 30px;
+    height: 32px;
     border-radius: 50%;
 }
 
@@ -187,7 +279,23 @@ li a {
 
 .hamburger-menu:hover .menu-container {
     height: 288px;
-    transition: 0.5s;
+    transition: 1s;
+}
+
+.hamburger-menu {
+    &:hover {
+        .hamburger-icon {
+            background-image: linear-gradient(white, white);
+        }
+    }
+}
+
+.hamburger-menu {
+    &:hover {
+        .hamburger-icon {
+            background-image: linear-gradient(white, white);
+        }
+    }
 }
 
 .menu-item {
@@ -224,6 +332,57 @@ li a {
 
 .sub-menu {
     display: none;
+}
+
+.teacher-info {
+    display: flex;
+}
+
+.teacher-type {
+    margin-top: 0px;
+    margin-bottom: 8px;
+    font-weight: 450;
+}
+
+.teacher-name {
+    margin-left: 3px;
+    margin-top: 0px;
+    margin-bottom: 8px;
+    font-weight: 550;
+    width: 81px;
+}
+
+.icon {
+    width: 15px;
+    height: 18px;
+    margin-left: auto;
+}
+
+.announcement {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.attachment-icon {
+    width: 10px;
+    height: 18px;
+    margin-top: 6px;
+    margin-right: 2px;
+}
+
+.extra-info {
+    font-weight: 450;
+    margin-top: 8px;
+}
+
+.date-time {
+    margin-top: 8px;
+    margin-left: auto;
+    font-weight: 450;
+}
+
+.class-details {
+    border-bottom: 1px solid rgba(110, 110, 110, .3);
 }
 
 .upper-tab {
