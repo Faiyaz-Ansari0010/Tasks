@@ -601,7 +601,7 @@ li a {
     opacity: 0.12;
 }
 
-.box-container {
+#box-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(476px, 1fr));
     grid-template-rows: 246px 246px;
@@ -613,18 +613,18 @@ li a {
     position: relative;
 }
 
-.box-container>div {
+#box-container>div {
     background-color: white;
 }
 
-.first-box-container {
+.box-container-card {
     padding: 24px 0 0 24px;
     display: flex;
     flex-direction: column;
     position: relative;
 }
 
-.first-box-top {
+.box-container-card-top {
     display: flex;
 }
 
@@ -640,10 +640,18 @@ li a {
 }
 
 .heading>div {
-    /* display: flex; */
     font-weight: 600;
     margin-bottom: 7px;
     color: #222222;
+    margin-right: 50px;
+
+    display: flex;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
 }
 
 .favourite-icon {
@@ -724,67 +732,50 @@ li a {
     margin-right: 24px;
 }
 
-.second-box-container {
+/* .second-box-container {
     padding: 24px 0 0 24px;
     display: flex;
     flex-direction: column;
     position: relative;
-}
+} */
 
-.second-box-top {
+/* .second-box-top {
     display: flex;
-}
+} */
 
 .less-opaque {
     opacity: 0.4;
 }
 
-.heading-2 {
-    width: 250px;
-    height: 41px;
-}
-
-.third-box-container {
+/* .third-box-container {
     padding: 24px 0 0 24px;
     display: flex;
     flex-direction: column;
     position: relative;
-}
+} */
 
-.third-box-top {
+/* .third-box-top {
     display: flex;
-}
+} */
 
-.heading-3 {
-    display: flex;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    /* width: 260px;
-    height: 43px; */
-
-    margin-right: 50px;
-}
-
-
-.fourth-box-container {
+/* .fourth-box-container {
     padding: 0px 0 0 0px;
     display: flex;
     flex-direction: column;
     position: relative;
+} */
+
+.box-padding-zero {
+    padding: 0;
 }
 
-.fourth-box-top {
+/* .fourth-box-top {
     margin-left: 24px;
     display: flex;
-}
+} */
 
-.heading-4 {
-    width: 260px;
-    height: 40px;
+.box-top-left-margin {
+    margin-left: 24px;
 }
 
 .last-class-stats {
