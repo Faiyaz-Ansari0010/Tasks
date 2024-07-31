@@ -1,0 +1,19 @@
+.sheet-container {
+    margin-top: 150px;
+    margin-bottom: 30px;
+}
+
+.column-names-container {
+    width: 1922px;
+    margin-left: 42px;
+    height: 30px;
+}
+
+.row-names-container {
+    height: 561px;
+}
+
+.cells-container {
+    width: 1922px;
+    height: 561px;
+}
