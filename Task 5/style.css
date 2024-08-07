@@ -12,18 +12,20 @@ body {
     width: 1922px;
     margin-left: 42px;
     height: 30px;
+
 }
 
 #row-names-container {
-    height: 561px;
+    width: 43px;
 }
 
 #cell-container {
     width: 1922px;
     height: 561px;
     position: relative;
-    bottom: 561px;
+    bottom: 564px;
     left: 43px;
+    cursor: cell;
 }
 
 .sheet-corner {
@@ -34,4 +36,9 @@ body {
     top: 0px;
     left: 0px;
     opacity: 90%;
+}
+
+.inputBoxContainer {
+    display: none;
+    position: absolute;
 }
