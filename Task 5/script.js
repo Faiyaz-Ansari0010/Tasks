@@ -23,59 +23,95 @@ class ExcelSheet {
         this.mouseMoveYPos = 0;
         this.isMouseDown = false;
 
-        this.columnCanvas.addEventListener('mousemove', this.handleMouseMove);
-
-        this.columnCanvas.addEventListener('mousedown', (event) => {
-            this.columnCanvas.style.cursor = "col-resize";
-            const rect = event.target.getBoundingClientRect();
-            this.mouseDownXPos = event.clientX - rect.left;
-            this.isMouseDown = true;
-        });
-
-        this.columnCanvas.addEventListener('mousemove', (event) => {
-            if (this.isMouseDown == true) {
-                const rect = event.target.getBoundingClientRect();
-                this.mouseMoveXPos = event.clientX - rect.left;
-                this.resizeColumnWidth();
-            }
-        });
+        this.columnCanvas.addEventListener('mousemove', this.getColResizeCursor.bind(this));
+        this.columnCanvas.addEventListener('mousedown', this.handleColumnMouseDown.bind(this));
+        this.columnCanvas.addEventListener('mousemove', this.handleColumnMouseMove.bind(this));
 
         this.columnCanvas.addEventListener('mouseup', (event) => {
-            // const rect = event.target.getBoundingClientRect();
-            // this.mouseUpXPos = event.clientX - rect.left;
-            // this.resizeColumnWidth();
-
             this.isMouseDown = false;
-            this.columnCanvas.removeEventListener('mousemove', (event) => {
-                if (this.isMouseDown == true) {
-                    const rect = event.target.getBoundingClientRect();
-                    this.mouseMoveXPos = event.clientX - rect.left;
-                    this.resizeColumnWidth();
-                }
-            })
+            this.columnCanvas.style.cursor = "default";
+            this.columnCanvas.removeEventListener('mousedown', this.handleColumnMouseDown.bind(this));
+            this.columnCanvas.removeEventListener('mousemove', this.handleColumnMouseMove.bind(this));
         });
     }
 
-    handleMouseMove() {
-        this.getColResizeCursor(e);
-    }
+    handleColumnMouseDown = (event) => {
+        this.isMouseDown = true;
+        this.columnCanvas.style.cursor = "col-resize";
+        const rect = event.target.getBoundingClientRect();
+        this.mouseDownXPos = event.clientX - rect.left;
+    };
+
+    handleColumnMouseMove = (event) => {
+        if (this.isMouseDown == true) {
+            const rect = event.target.getBoundingClientRect();
+            this.mouseMoveXPos = event.clientX - rect.left;
+            this.mouseMoveYPos = event.clientY - rect.top;
+            if (this.mouseMoveYPos > this.columnCanvas.height - 2) {
+                this.isMouseDown = false;
+                // console.log("Y greater than 29" + this.columnCanvas.width)
+            }
+            this.resizeColumnWidth();
+        }
+    };
+
+    // resizeColumnWidth() {
+
+    //     let cumulativeColumnWidth = 0;
+    //     let extendedColumnWidth = this.mouseMoveXPos - this.mouseDownXPos;
+    //     document.getElementById("demo").innerHTML = this.mouseDownXPos + " " + this.mouseMoveXPos;
+    //     document.getElementById("demo").innerHTML += " -" + extendedColumnWidth;
+
+    //     for (let i = 0; i < this.colSizeArray.length; i++) {
+    //         cumulativeColumnWidth += this.colSizeArray[i];
+
+    //         if (this.mouseDownXPos < (cumulativeColumnWidth + 5) &&
+    //             this.mouseDownXPos > (cumulativeColumnWidth - 5)) {
+    //             this.colSizeArray[i] += extendedColumnWidth;
+    //             console.log(extendedColumnWidth);
+    //             break;
+    //         }
+    //     }
+
+    //     if (this.colSizeArray[2] < 5) {
+    //         this.isMouseDown = false;
+    //     }
+
+    //     this.mouseDownXPos = this.mouseMoveXPos;
+
+    //     this.cellCtx.clearRect(0, 0, this.cellCanvas.width, this.cellCanvas.height);
+    //     this.columnCtx.clearRect(0, 0, this.columnCanvas.width, this.columnCanvas.height);
+    //     this.columnCtx.fillStyle = "#ebebeb";
+    //     this.columnCtx.fillRect(0, 0, this.columnCanvas.width, this.columnCanvas.height);
+    //     this.drawColumnLines(10, 30);
+    //     this.drawGridColumnLines(0, 560);
+    //     this.nameColumns();
+    //     this.drawGridRowLines(0, 1820);
+    // }
 
     resizeColumnWidth() {
-        document.getElementById("demo").innerHTML = this.mouseDownXPos + " " + this.mouseMoveXPos;
-        let extendedColumnWidth = this.mouseMoveXPos - this.mouseDownXPos;
-        document.getElementById("demo").innerHTML += " -" + extendedColumnWidth;
         let cumulativeColumnWidth = 0;
+        let columnIndex = -1;
 
         for (let i = 0; i < this.colSizeArray.length; i++) {
             cumulativeColumnWidth += this.colSizeArray[i];
 
-            if (this.mouseDownXPos < (cumulativeColumnWidth + 5)
-            ) {
-                this.colSizeArray[i] += extendedColumnWidth;
-                // console.log(i + " " + extendedColumnWidth);
+            if (this.mouseDownXPos < (cumulativeColumnWidth + 5) &&
+                this.mouseDownXPos > (cumulativeColumnWidth - 5)) {
+                columnIndex = i;
                 break;
             }
         }
+
+        let extendedColumnWidth = this.mouseMoveXPos - this.mouseDownXPos;
+
+        this.colSizeArray[columnIndex] += extendedColumnWidth;
+
+        if (this.colSizeArray[columnIndex] < 5) {
+            this.isMouseDown = false;
+        }
+
+        this.mouseDownXPos = this.mouseMoveXPos;
 
         this.cellCtx.clearRect(0, 0, this.cellCanvas.width, this.cellCanvas.height);
         this.columnCtx.clearRect(0, 0, this.columnCanvas.width, this.columnCanvas.height);
@@ -86,6 +122,7 @@ class ExcelSheet {
         this.nameColumns();
         this.drawGridRowLines(0, 1820);
     }
+
 
     getCursorPos(event) {
         let rect = event.target.getBoundingClientRect();
