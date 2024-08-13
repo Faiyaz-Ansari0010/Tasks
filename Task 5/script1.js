@@ -9,8 +9,6 @@ class columnGrid {
         this.columnCanvas.addEventListener("mousemove", (event) => {
             this.getColResizeCursor(event);
         })
-
-        this.colSizeArray[1] = 75;
     }
 
     getColResizeCursor(event) {
@@ -20,7 +18,6 @@ class columnGrid {
         let totalColumnsWidth = 0;
 
         for (let i = 0; i < this.colSizeArray.length; i++) {
-            console.log(totalColumnsWidth);
 
             if (cursorPosX == totalColumnsWidth) {
                 this.columnCanvas.style.cursor = "col-resize";
@@ -81,8 +78,8 @@ class columnGrid {
 }
 
 const myColumnGrid = new columnGrid();
-myColumnGrid.drawColumnBoundary(0, 30, 1992, 30);
-myColumnGrid.drawColumnLines(0, 30);
+myColumnGrid.drawColumnBoundary(0, 30, 1860, 30);
+myColumnGrid.drawColumnLines(10, 30);
 myColumnGrid.nameColumns();
 
 
@@ -139,17 +136,11 @@ class dataGrid {
         this.cellCtx = this.cellCanvas.getContext("2d");
         this.colSizeArray = Array(30).fill(64);
         this.rowSizeArray = Array(28).fill(20);
-        this.currentInputBoxContainer = null;
 
         this.cellCanvas.addEventListener('click', (event) => {
             console.log("single-click detected");
             this.createInputBox(event);
         });
-
-        // this.cellCanvas.addEventListener('click', (event) => {
-        //     console.log("Single-click detected");
-        //     this.drawCellBorder(event);
-        // })
     }
 
     drawCellBorder(event) {
@@ -211,14 +202,6 @@ class dataGrid {
         document.getElementById("cell-container").appendChild(inputBoxContainer);
         inputBoxContainer.appendChild(inputBox);
 
-        // if (this.currentInputBoxContainer != null) {
-        //     // this.currentInputBoxContainer.style.border = "0px";
-        // }
-
-        // if (this.currentInputBox != null) {
-        //     this.currentInputBox.remove();
-        // }
-
         const inputBoxPosInfo = this.getInputBoxPosition(event);
 
         let posX = inputBoxPosInfo.posX;
@@ -267,7 +250,7 @@ class dataGrid {
     }
 
     drawColumnLines(moveToY, lineToY) {
-        for (let i = 1; i < this.colSizeArray.length; i++) {
+        for (let i = 0; i < this.colSizeArray.length; i++) {
             this.cellCtx.beginPath();
             this.cellCtx.moveTo((i * this.colSizeArray[i]), moveToY);
             this.cellCtx.lineTo((i * this.colSizeArray[i]), lineToY);
@@ -290,7 +273,8 @@ class dataGrid {
 
 const myDataGrid = new dataGrid();
 myDataGrid.drawColumnLines(0, 560);
-myDataGrid.drawRowLines(0, 1992);
+myDataGrid.drawRowLines(0, 1860);
+
 
 // class dataGrid {
 //     constructor() {
@@ -440,4 +424,4 @@ myDataGrid.drawRowLines(0, 1992);
 
 // const myDataGrid = new dataGrid();
 // myDataGrid.drawColumnLines(0, 560);
-// myDataGrid.drawRowLines(0, 1992);
+// myDataGrid.drawRowLines(0, 1860);

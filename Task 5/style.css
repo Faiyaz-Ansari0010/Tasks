@@ -9,7 +9,7 @@ body {
 }
 
 #column-names-container {
-    width: 1922px;
+    width: 1820px;
     margin-left: 42px;
     height: 30px;
 
@@ -20,11 +20,11 @@ body {
 }
 
 #cell-container {
-    width: 1922px;
+    width: 1820px;
     height: 561px;
     position: relative;
     bottom: 564px;
-    left: 43px;
+    left: 42.2px;
     cursor: cell;
 }
 
