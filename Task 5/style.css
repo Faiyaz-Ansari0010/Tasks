@@ -12,7 +12,6 @@ body {
     width: 1820px;
     margin-left: 42px;
     height: 30px;
-
 }
 
 #row-names-container {
@@ -42,3 +41,10 @@ body {
     display: none;
     position: absolute;
 }
+
+/* .selectedCellsDivContainer {
+    width: 65px;
+    height: 20px;
+    border: 1px solid black;
+    display: none;
+} */
