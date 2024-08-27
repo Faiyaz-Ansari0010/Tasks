@@ -21,7 +21,7 @@ class ExcelSheet {
         for (let i = 0; i < this.rowSizeArray.length; i++) {
             this.dataArray[i] = [];
             for (let j = 0; j < this.colSizeArray.length; j++) {
-                this.dataArray[i][j] = null;
+                this.dataArray[i][j] = "";
             }
         }
 
@@ -55,29 +55,199 @@ class ExcelSheet {
             this.rowCanvas.removeEventListener('mousemove', this.handleRowMouseMove.bind(this));
         });
 
-        this.isMouseDownOnCell = false;
         this.inputBox = this.createElement("input", "text", "inputBox");
         this.inputBox.setAttribute("name", "cellInput");
         document.getElementById("cell-container").appendChild(this.inputBox);
+        this.inputBox.style.position = "absolute";
         this.inputBox.style.display = "none";
 
-        this.cellCanvas.addEventListener('mousedown', this.getSelectedCellBorder.bind(this));
-        this.cellCanvas.addEventListener('mousedown', this.getInputBox.bind(this));
-
         this.inputBox.addEventListener('keypress', this.addData.bind(this));
-        this.inputBox.addEventListener('click', (event) => {
-            this.inputBox.focus();
-        });
 
         this.cellPosInfo = {
-            cellColumnNo: -1,
-            cellRowNo: -1,
+            cellColumnNo: 0,
+            cellRowNo: 0,
             cellPosX: 0,
             cellPosY: 0
         }
+
+        this.isMouseDownOnCellCanvas = false;
+        this.cellCanvas.addEventListener('mousedown', this.getInputBox.bind(this));
+        
+        this.currColumnNo = 0;
+        this.currRowNo = 0;
+        document.getElementById("cell-container").addEventListener('mousemove', this.handleMouseMoveOnCell.bind(this));
+        document.getElementById("cell-container").addEventListener('mouseup', (event) =>{
+            if(this.isMouseDownOnCellCanvas === true){
+                this.isMouseDownOnCellCanvas = false;
+            }
+        });
+
+        this.selectedCellsArray = new Array();
+
+        document.getElementById("calculate-button").addEventListener('click', this.performCalculations.bind(this));
+
     };
     // Outside Constructor
 
+    performCalculations() {
+        document.getElementById("sum").innerHTML = "";
+        let sum = 0;
+        for(let i = 0; i < this.selectedCellsArray.length; i++) {
+            let rowNo = this.selectedCellsArray[i].rowNo;
+            let colNo = this.selectedCellsArray[i].colNo;
+            let cellElement = Number(this.dataArray[rowNo][colNo]);
+            sum = sum + cellElement;
+        }
+        document.getElementById("sum").innerHTML = sum;
+
+        document.getElementById("average").innerHTML = "";
+        let average = 0;
+        let sumAvg = 0;
+        for(let i = 0; i < this.selectedCellsArray.length; i++) {
+            let rowNo = this.selectedCellsArray[i].rowNo;
+            let colNo = this.selectedCellsArray[i].colNo;
+            let cellElement = Number(this.dataArray[rowNo][colNo]);
+            sumAvg = sumAvg + cellElement;
+        }
+        document.getElementById("average").innerHTML = sumAvg/this.selectedCellsArray.length;
+
+        document.getElementById("minValue").innerHTML = "";
+        let minValue = Number.MAX_SAFE_INTEGER;
+        for(let i = 0; i < this.selectedCellsArray.length; i++) {
+            let rowNo = this.selectedCellsArray[i].rowNo;
+            let colNo = this.selectedCellsArray[i].colNo;
+            let cellElement = Number(this.dataArray[rowNo][colNo]);
+            minValue = Math.min(minValue, cellElement);
+        }
+        document.getElementById("minValue").innerHTML = minValue;
+
+        document.getElementById("maxValue").innerHTML = "";
+        let maxValue = Number.MIN_SAFE_INTEGER;
+        for(let i = 0; i < this.selectedCellsArray.length; i++) {
+            let rowNo = this.selectedCellsArray[i].rowNo;
+            let colNo = this.selectedCellsArray[i].colNo;
+            let cellElement = Number(this.dataArray[rowNo][colNo]);
+            maxValue = Math.max(maxValue, cellElement);
+        }
+        document.getElementById("maxValue").innerHTML = maxValue;
+    }
+    
+    storeSelectedCells(currRowNo, currColumnNo, mouseMoveCellRow, mouseMoveCellCol){
+
+        let startRow=Math.min(currRowNo, mouseMoveCellRow);
+        let endRow=Math.max(currRowNo, mouseMoveCellRow);
+        let startCol=Math.min(currColumnNo, mouseMoveCellCol);
+        let endCol=Math.max(currColumnNo, mouseMoveCellCol);
+        this.selectedCellsArray =[];
+
+        for(let i=startRow;i<=endRow;i++){
+            for(let j=startCol; j<=endCol;j++){
+                let cellPos = new Object();
+                cellPos.rowNo = i;
+                cellPos.colNo = j;
+                this.selectedCellsArray.push(cellPos);
+            }
+        }
+    }
+
+    handleMouseMoveOnCell(event){
+        if(this.isMouseDownOnCellCanvas == true){
+            let rect = event.target.getBoundingClientRect();
+            let mouseMovePosX = event.clientX - rect.left;
+            let mouseMovePosY = event.clientY - rect.top;
+            let cumulativeSelectedWidth = 0;
+            let cumulativeSelectedHeight = 0;
+            let mouseMoveCellPosInfo = this.getMouseMoveCellPosInfo(event);
+            let mouseMoveCellCol = mouseMoveCellPosInfo.cellColumnNo;
+            let mouseMoveCellRow = mouseMoveCellPosInfo.cellRowNo;
+
+            this.selectCellsBorder(this.currRowNo, this.currColumnNo, mouseMoveCellRow, mouseMoveCellCol);
+        }
+    }
+
+    selectCellsBorder(currRowNo, currColumnNo, mouseMoveCellRow, mouseMoveCellCol){
+        let drawX = 0, drawY = 0, startX = 0, startY = 0, totalX = 0, totalY = 0;
+
+        let startColNo = Math.min(currColumnNo, mouseMoveCellCol);
+        let startRowNo = Math.min(currRowNo, mouseMoveCellRow);
+        let endColNo = Math.max(currColumnNo, mouseMoveCellCol);
+        let endRowNo = Math.max(currRowNo, mouseMoveCellRow);
+        
+        for(let i=0;i<=endColNo;i++){
+            totalX += this.colSizeArray[i];
+        }
+
+        for(let i=0;i<startColNo;i++){
+            startX += this.colSizeArray[i];
+        }
+
+        for(let i=0;i<=endRowNo;i++){
+            totalY += this.rowSizeArray[i+1];
+        }
+
+        for(let i=0;i<startRowNo;i++){
+            startY += this.rowSizeArray[i];
+        }
+
+        drawX = totalX-startX;
+        drawY = totalY-startY;
+        let currCellXPos = this.cellPosInfo.cellPosX;
+        let currCellYPos = this.cellPosInfo.cellPosY;
+
+        this.storeSelectedCells(currRowNo, currColumnNo, mouseMoveCellRow, mouseMoveCellCol);
+
+        this.clearColumnAndCellCanvas();
+        this.clearRowAndCellCanvas();
+
+        this.cellCtx.fillStyle = "#e7f1ec"
+        this.cellCtx.fillRect(startX, startY, drawX, drawY)
+
+        this.cellCtx.fillStyle = "white"
+        this.cellCtx.fillRect(currCellXPos, currCellYPos, 
+            this.colSizeArray[currColumnNo], this.rowSizeArray[currRowNo]);
+
+        this.redrawColumnAndCellCanvas();
+        this.redrawRowAndCellCanvas();
+        this.renderData();
+
+        this.cellCtx.strokeStyle = "#107c41";
+        this.cellCtx.lineWidth = 2;
+        this.cellCtx.strokeRect(startX, startY, drawX, drawY);
+        // this.drawCellBorder("#bcbcbc")
+    }
+
+    getMouseMoveCellPosInfo(event){
+        let clickCoordinates = this.getMouseMoveCoordinates(event);
+        let cumulativeColumnWidth = 0;
+        let cumulativeRowHeight = 0;
+        let cellColumnNo = 0, cellRowNo = 0;
+
+        for (let i = 0; i < this.colSizeArray.length; i++) {
+            cumulativeColumnWidth += this.colSizeArray[i];
+            if (clickCoordinates.clickPosX < cumulativeColumnWidth) {
+                cellColumnNo = i;
+                break;
+            }
+        }
+
+        for (let i = 0; i < this.rowSizeArray.length; i++) {
+            cumulativeRowHeight += this.rowSizeArray[i];
+            if (clickCoordinates.clickPosY < cumulativeRowHeight) {
+                cellRowNo = i;
+                break;
+            }
+        }
+
+        return {cellColumnNo:cellColumnNo, cellRowNo:cellRowNo};
+    }
+
+    getMouseMoveCoordinates(event) {
+        let rect = document.getElementById("cell-container").getBoundingClientRect();
+        let clickPosX = event.clientX - rect.left;
+        let clickPosY = event.clientY - rect.top;
+
+        return { clickPosX: clickPosX, clickPosY: clickPosY };
+    }
 
     renderData() {
         let cumulativeRowHeight, cumulativeColumnWidth;
@@ -100,8 +270,6 @@ class ExcelSheet {
                 else {
                     cumulativeColumnWidth += this.colSizeArray[j];
                 }
-
-                // console.log(cumulativeRowHeight + "-" + cumulativeColumnWidth)
 
                 this.cellCtx.textBaseline = "top";
                 this.cellCtx.textAlign = "left";
@@ -127,64 +295,46 @@ class ExcelSheet {
         }
     }
 
-    getSelectedCellBorder = (event) => {
-
-        console.log("single click")
-        this.isMouseDownOnCell = true;
-        this.setCellPosInfo(event);
-
-        this.clearColumnAndCellCanvas();
-        this.clearRowAndCellCanvas();
-
-        this.redrawColumnAndCellCanvas();
-        this.redrawRowAndCellCanvas();
-
-        this.drawCellBorder()
-
-        this.renderData()
-        console.log(this.cellPosInfo);
-    }
-
     getInputBox(event) {
+        this.isMouseDownOnCellCanvas = true;
+        this.dataArray[this.cellPosInfo.cellRowNo][this.cellPosInfo.cellColumnNo] = this.inputBox.value;
 
-        console.log("double click")
-
-        this.inputBox.style.display = "flex";
-        this.inputBox.style.width = "100%";
-        // this.inputBox.style.border = "none";
-        this.inputBox.style.background = "none";
-        this.inputBox.style.outline = "none";
-        this.inputBox.style.boxSizing = "border-box";
-
-
-        this.cellCtx.textBaseline = "top";
-        this.cellCtx.textAlign = "left";
-        this.cellCtx.font = "14px Arial";  // Set a font size and family
-        this.cellCtx.fillStyle = "#000000";  // Optional: Set the text color to black
-
-        // this.cellCtx.fillText(this.inputBox.value, this.cellPosInfo.cellPosX + 4, this.cellPosInfo.cellPosY + 4);
-
+        this.setCellPosInfo(event);
         let cellRowNo = this.cellPosInfo.cellRowNo;
         let cellColNo = this.cellPosInfo.cellColumnNo;
         let cellPosX = this.cellPosInfo.cellPosX;
         let cellPosY = this.cellPosInfo.cellPosY;
-        // console.log(this.cellPosInfo);
+
+        this.inputBox.style.display = "flex";
+        this.inputBox.style.fontSize = "15px";
+        this.inputBox.style.boxSizing = "border-box";
+        this.inputBox.style.left = cellPosX + "px";
+        this.inputBox.style.top = cellPosY + "px";
+        this.inputBox.style.width = this.colSizeArray[cellColNo] + "px";
+        this.inputBox.style.height = this.rowSizeArray[cellRowNo] + "px";
+        // this.inputBox.style.border = "none";
+        this.inputBox.style.background = "none";
+        this.inputBox.style.outline = "none";
+        this.inputBox.style.focus;
+
+        this.cellCtx.textBaseline = "top";
+        this.cellCtx.textAlign = "left";
+        this.cellCtx.font = "14px Arial";
+        this.cellCtx.fillStyle = "#000000";
 
         let currInputBoxValue = this.dataArray[cellRowNo][cellColNo];
+        this.dataArray[cellRowNo][cellColNo] = "";
         this.clearColumnAndCellCanvas();
         this.clearRowAndCellCanvas();
         this.inputBox.value = currInputBoxValue;
         this.redrawColumnAndCellCanvas();
         this.redrawRowAndCellCanvas();
-        this.getSelectedCellBorder(event);
-        this.dataArray[cellRowNo][cellColNo] = this.inputBox.value;
-        console.log(this.inputBox.value);
-        this.inputBox.value = this.dataArray[cellRowNo][cellColNo];
         this.renderData();
-        this.inputBox.blur();
+        this.drawCellBorder()
+        this.dataArray[cellRowNo][cellColNo] = currInputBoxValue;
     }
 
-    drawCellBorder(){
+    drawCellBorder() {
         let cellRowNo = this.cellPosInfo.cellRowNo;
         let cellColNo = this.cellPosInfo.cellColumnNo;
         let cellPosX = this.cellPosInfo.cellPosX;
@@ -205,6 +355,8 @@ class ExcelSheet {
             if (clickCoordinates.clickPosX < cumulativeColumnWidth) {
                 this.cellPosInfo.cellColumnNo = i;
                 this.cellPosInfo.cellPosX = cumulativeColumnWidth - this.colSizeArray[i];
+                this.startX = cumulativeColumnWidth - this.colSizeArray[i];
+                this.currColumnNo = i;
                 break;
             }
         }
@@ -214,11 +366,11 @@ class ExcelSheet {
             if (clickCoordinates.clickPosY < cumulativeRowHeight) {
                 this.cellPosInfo.cellRowNo = i;
                 this.cellPosInfo.cellPosY = cumulativeRowHeight - this.rowSizeArray[i];
+                this.startY = cumulativeRowHeight - this.rowSizeArray[i];
+                this.currRowNo = i;
                 break;
             }
         }
-
-        // return { cellColumnNo, cellRowNo, cellPosX, cellPosY };
     }
 
     getClickCoordinates(event) {
@@ -272,7 +424,6 @@ class ExcelSheet {
             this.mouseMoveOnRowXPos = event.clientX - rect.left;
             if (this.mouseMoveOnRowXPos > this.rowCanvas.width - 4) {
                 this.isMouseDownOnRow = false;
-                console.log(this.mouseMoveOnRowXPos + " " + this.rowCanvas.width)
             }
             this.resizeRowHeight();
         }
@@ -291,11 +442,13 @@ class ExcelSheet {
 
         for (let i = 0; i < this.rowSizeArray.length; i++) {
             cumulativeRowHeight += this.rowSizeArray[i];
-
+            if (this.mouseDownOnRowYPos < cumulativeRowHeight) {
+                rowIndex = i;
+                break;
+            }
             if (this.mouseDownOnRowYPos < (cumulativeRowHeight + 5) &&
                 this.mouseDownOnRowYPos > (cumulativeRowHeight - 5)) {
                 rowIndex = i;
-                // console.log(this.mouseDownOnRowYPos + " " + cumulativeRowHeight + " " + rowIndex)
                 break;
             }
         }
@@ -366,7 +519,6 @@ class ExcelSheet {
             this.mouseMoveOnColumnYPos = event.clientY - rect.top;
             if (this.mouseMoveOnColumnYPos > this.columnCanvas.height - 2) {
                 this.isMouseDownOnColumn = false;
-                // console.log("Y greater than 29" + this.columnCanvas.width)
             }
             this.resizeColumnWidth();
         }
@@ -413,9 +565,9 @@ class ExcelSheet {
 
         this.clearColumnAndCellCanvas();
         this.redrawColumnAndCellCanvas();
-
         this.drawCellBorder();
         this.renderData();
+        this.inputBox.style.width = this.colSizeArray[this.cellPosInfo.cellColumnNo] + "px";
     }
 
     drawColumnBoundary(moveToX, moveToY, lineToX, lineToY) {
@@ -504,7 +656,6 @@ class ExcelSheet {
             let top = prevCumulativeRowHeight + ((cumulativeRowHeight - prevCumulativeRowHeight) / 2)
             this.rowCtx.fillText(rowIdx + 1, 25, top);
             rowIdx++;
-            // console.log(top);
         }
     }
 
