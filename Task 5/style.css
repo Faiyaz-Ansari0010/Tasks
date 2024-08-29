@@ -17,14 +17,20 @@ body {
     width: 43px;
 }
 
-#cell-container {
-    width: 1820px;
-    height: 561px;
+.outer-cell-container{
     position: relative;
     bottom: 564px;
     left: 42.2px;
+    overflow: scroll;
+}
+
+#cell-container {
+    width: 1820px;
+    height: 561px;
     cursor: cell;
 }
+
+
 
 .sheet-corner {
     height: 30px;
@@ -36,18 +42,45 @@ body {
     opacity: 90%;
 }
 
-.calculatedInfo{
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-around;
-}
-
-#calculate-button{
-    margin-left: 30px;
+.calculatedInfo {
     margin-top: 20px;
+    margin-left: 30px;
+    margin-bottom: 20px;
+    display: flex;
 }
 
-.calculate-item{
+.calculatedInfo div{
+    margin-right: 50px;
+}
+
+.calculate-item {
     padding: 2px;
     border: 1px solid black;
+}
+
+#bar-graph-btn {
+    margin-left: 30px;
+    margin-right: 10px;
+}
+
+.graphContainer {
+    position: absolute;
+    top: 60px;
+    left: 130px;
+}
+
+.graphCanvas {
+    background-color: white;
+    width: 600px;
+    height: 300px;
+    border: 1px solid black;
+}
+
+.exitGraphIconContainer {
+    width: 20px;
+    height: 20px;
+    border: 1px solid black;
+    display: flex;
+    margin-left: 580px;
+    cursor: pointer;
 }

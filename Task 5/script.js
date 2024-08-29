@@ -72,27 +72,137 @@ class ExcelSheet {
 
         this.isMouseDownOnCellCanvas = false;
         this.cellCanvas.addEventListener('mousedown', this.getInputBox.bind(this));
-        
-        this.currColumnNo = 0;
+
+        this.currColNo = 0;
         this.currRowNo = 0;
+        this.endRowNo = 0;
+        this.endColNo = 0;
         document.getElementById("cell-container").addEventListener('mousemove', this.handleMouseMoveOnCell.bind(this));
-        document.getElementById("cell-container").addEventListener('mouseup', (event) =>{
-            if(this.isMouseDownOnCellCanvas === true){
+        document.getElementById("cell-container").addEventListener('mouseup', (event) => {
+            if (this.isMouseDownOnCellCanvas === true) {
                 this.isMouseDownOnCellCanvas = false;
             }
         });
 
         this.selectedCellsArray = new Array();
 
-        document.getElementById("calculate-button").addEventListener('click', this.performCalculations.bind(this));
+        // document.getElementById("calculate-button").addEventListener('click', this.performCalculations.bind(this));
+
+        this.graphContainer = this.createElement("div", "", "graphContainer");
+        document.getElementById("cell-container").appendChild(this.graphContainer);
+        this.exitGraphIconContainer = this.createElement("div", "", "exitGraphIconContainer");
+        this.graphContainer.appendChild(this.exitGraphIconContainer);
+        this.graphCanvas = this.createElement("canvas", "", "graphCanvas");
+        this.graphCanvas.id = "graphCanvas";
+        this.graphContainer.appendChild(this.graphCanvas);
+        this.exitGraphIcon = this.createElement("img", "", "exitGraphIcon");
+        this.exitGraphIcon.setAttribute("src", "exitIcon.jpg");
+        this.exitGraphIconContainer.appendChild(this.exitGraphIcon);
+        this.graphContainer.style.display = "none";
+
+        document.getElementById("bar-graph-btn").addEventListener('click', this.showBarGraph.bind(this));
+        document.getElementById("line-graph-btn").addEventListener('click', this.showLineGraph.bind(this));
+
+        this.exitGraphIconContainer.addEventListener('click', () => {
+            this.graphContainer.style.display = "none";
+        });
 
     };
     // Outside Constructor
 
+    destroyGraph() {
+        if (this.draw) {
+            this.draw.destroy()
+        }
+    }
+
+    showLineGraph(event) {
+    this.destroyGraph();
+
+    this.graphContainer.style.display = "block";
+    let xValues = [];
+    let yValues = [];
+
+    // Populate xValues based on selectedCellsArray
+    for (let i = 0; i < this.selectedCellsArray.length; i++) {
+        if (!xValues.includes(this.selectedCellsArray[i].rowNo + 1)) {
+            xValues.push(this.selectedCellsArray[i].rowNo + 1);
+        }
+    }
+
+    for (let i = this.currColNo; i <= this.endColNo; i++) {
+        let line = i+1
+        let myObj = {
+            label: "Line" + line,
+            borderColor: "red",
+            data: [],
+            fill: false,
+            tension: false
+        }
+        for (let j = this.currRowNo; j <= this.endRowNo; j++) {
+            myObj.data.push(this.dataArray[j][i]);
+        }
+
+        yValues.push(myObj);
+    }
+
+    // Create the line chart
+    this.draw = new Chart("graphCanvas", {
+        type: "line",
+        data: {
+            labels: xValues,
+            datasets: yValues  // Assign yValues to the datasets field
+        },
+        options: {
+            responsive: false
+        }
+    });
+    }
+
+    showBarGraph(event) {
+        this.destroyGraph()
+
+        this.graphContainer.style.display = "block";
+        let xValues = [];
+        let yValues = [];
+
+        for (let i = 0; i < this.selectedCellsArray.length; i++) {
+            if (!xValues.includes(this.selectedCellsArray[i].rowNo + 1)) {
+                xValues.push(this.selectedCellsArray[i].rowNo + 1);
+            }
+        }
+
+        for (let i = this.currColNo; i <= this.endColNo; i++) {
+            let myObj = {
+                label: i + 1,
+                backgroundColor: "red",
+                data: []
+            }
+            for (let j = this.currRowNo; j <= this.endRowNo; j++) {
+                myObj.data.push(this.dataArray[j][i]);
+            }
+
+            yValues.push(myObj);
+        }
+
+        this.draw = new Chart("graphCanvas", {
+            type: "bar",
+            data: {
+                labels: xValues,
+                datasets: yValues
+            },
+
+            options: {
+                responsive: false
+            }
+        });
+        // console.log(yValues);
+    }
+
     performCalculations() {
         document.getElementById("sum").innerHTML = "";
         let sum = 0;
-        for(let i = 0; i < this.selectedCellsArray.length; i++) {
+        for (let i = 0; i < this.selectedCellsArray.length; i++) {
             let rowNo = this.selectedCellsArray[i].rowNo;
             let colNo = this.selectedCellsArray[i].colNo;
             let cellElement = Number(this.dataArray[rowNo][colNo]);
@@ -103,17 +213,17 @@ class ExcelSheet {
         document.getElementById("average").innerHTML = "";
         let average = 0;
         let sumAvg = 0;
-        for(let i = 0; i < this.selectedCellsArray.length; i++) {
+        for (let i = 0; i < this.selectedCellsArray.length; i++) {
             let rowNo = this.selectedCellsArray[i].rowNo;
             let colNo = this.selectedCellsArray[i].colNo;
             let cellElement = Number(this.dataArray[rowNo][colNo]);
             sumAvg = sumAvg + cellElement;
         }
-        document.getElementById("average").innerHTML = sumAvg/this.selectedCellsArray.length;
+        document.getElementById("average").innerHTML = sumAvg / this.selectedCellsArray.length;
 
         document.getElementById("minValue").innerHTML = "";
         let minValue = Number.MAX_SAFE_INTEGER;
-        for(let i = 0; i < this.selectedCellsArray.length; i++) {
+        for (let i = 0; i < this.selectedCellsArray.length; i++) {
             let rowNo = this.selectedCellsArray[i].rowNo;
             let colNo = this.selectedCellsArray[i].colNo;
             let cellElement = Number(this.dataArray[rowNo][colNo]);
@@ -123,7 +233,7 @@ class ExcelSheet {
 
         document.getElementById("maxValue").innerHTML = "";
         let maxValue = Number.MIN_SAFE_INTEGER;
-        for(let i = 0; i < this.selectedCellsArray.length; i++) {
+        for (let i = 0; i < this.selectedCellsArray.length; i++) {
             let rowNo = this.selectedCellsArray[i].rowNo;
             let colNo = this.selectedCellsArray[i].colNo;
             let cellElement = Number(this.dataArray[rowNo][colNo]);
@@ -131,27 +241,30 @@ class ExcelSheet {
         }
         document.getElementById("maxValue").innerHTML = maxValue;
     }
-    
-    storeSelectedCells(currRowNo, currColumnNo, mouseMoveCellRow, mouseMoveCellCol){
 
-        let startRow=Math.min(currRowNo, mouseMoveCellRow);
-        let endRow=Math.max(currRowNo, mouseMoveCellRow);
-        let startCol=Math.min(currColumnNo, mouseMoveCellCol);
-        let endCol=Math.max(currColumnNo, mouseMoveCellCol);
-        this.selectedCellsArray =[];
+    storeSelectedCells(currRowNo, currColumnNo, mouseMoveCellRow, mouseMoveCellCol) {
 
-        for(let i=startRow;i<=endRow;i++){
-            for(let j=startCol; j<=endCol;j++){
+        let startRow = Math.min(currRowNo, mouseMoveCellRow);
+        let endRow = Math.max(currRowNo, mouseMoveCellRow);
+        let startCol = Math.min(currColumnNo, mouseMoveCellCol);
+        let endCol = Math.max(currColumnNo, mouseMoveCellCol);
+        this.selectedCellsArray = [];
+
+        for (let i = startRow; i <= endRow; i++) {
+            for (let j = startCol; j <= endCol; j++) {
                 let cellPos = new Object();
                 cellPos.rowNo = i;
                 cellPos.colNo = j;
                 this.selectedCellsArray.push(cellPos);
             }
         }
+
+        this.endRowNo = mouseMoveCellRow;
+        this.endColNo = mouseMoveCellCol;
     }
 
-    handleMouseMoveOnCell(event){
-        if(this.isMouseDownOnCellCanvas == true){
+    handleMouseMoveOnCell(event) {
+        if (this.isMouseDownOnCellCanvas == true) {
             let rect = event.target.getBoundingClientRect();
             let mouseMovePosX = event.clientX - rect.left;
             let mouseMovePosY = event.clientY - rect.top;
@@ -161,36 +274,36 @@ class ExcelSheet {
             let mouseMoveCellCol = mouseMoveCellPosInfo.cellColumnNo;
             let mouseMoveCellRow = mouseMoveCellPosInfo.cellRowNo;
 
-            this.selectCellsBorder(this.currRowNo, this.currColumnNo, mouseMoveCellRow, mouseMoveCellCol);
+            this.selectCellsBorder(this.currRowNo, this.currColNo, mouseMoveCellRow, mouseMoveCellCol);
         }
     }
 
-    selectCellsBorder(currRowNo, currColumnNo, mouseMoveCellRow, mouseMoveCellCol){
+    selectCellsBorder(currRowNo, currColumnNo, mouseMoveCellRow, mouseMoveCellCol) {
         let drawX = 0, drawY = 0, startX = 0, startY = 0, totalX = 0, totalY = 0;
 
         let startColNo = Math.min(currColumnNo, mouseMoveCellCol);
         let startRowNo = Math.min(currRowNo, mouseMoveCellRow);
         let endColNo = Math.max(currColumnNo, mouseMoveCellCol);
         let endRowNo = Math.max(currRowNo, mouseMoveCellRow);
-        
-        for(let i=0;i<=endColNo;i++){
+
+        for (let i = 0; i <= endColNo; i++) {
             totalX += this.colSizeArray[i];
         }
 
-        for(let i=0;i<startColNo;i++){
+        for (let i = 0; i < startColNo; i++) {
             startX += this.colSizeArray[i];
         }
 
-        for(let i=0;i<=endRowNo;i++){
-            totalY += this.rowSizeArray[i+1];
+        for (let i = 0; i <= endRowNo; i++) {
+            totalY += this.rowSizeArray[i + 1];
         }
 
-        for(let i=0;i<startRowNo;i++){
+        for (let i = 0; i < startRowNo; i++) {
             startY += this.rowSizeArray[i];
         }
 
-        drawX = totalX-startX;
-        drawY = totalY-startY;
+        drawX = totalX - startX;
+        drawY = totalY - startY;
         let currCellXPos = this.cellPosInfo.cellPosX;
         let currCellYPos = this.cellPosInfo.cellPosY;
 
@@ -203,7 +316,7 @@ class ExcelSheet {
         this.cellCtx.fillRect(startX, startY, drawX, drawY)
 
         this.cellCtx.fillStyle = "white"
-        this.cellCtx.fillRect(currCellXPos, currCellYPos, 
+        this.cellCtx.fillRect(currCellXPos, currCellYPos,
             this.colSizeArray[currColumnNo], this.rowSizeArray[currRowNo]);
 
         this.redrawColumnAndCellCanvas();
@@ -213,10 +326,12 @@ class ExcelSheet {
         this.cellCtx.strokeStyle = "#107c41";
         this.cellCtx.lineWidth = 2;
         this.cellCtx.strokeRect(startX, startY, drawX, drawY);
+
+        this.performCalculations();
         // this.drawCellBorder("#bcbcbc")
     }
 
-    getMouseMoveCellPosInfo(event){
+    getMouseMoveCellPosInfo(event) {
         let clickCoordinates = this.getMouseMoveCoordinates(event);
         let cumulativeColumnWidth = 0;
         let cumulativeRowHeight = 0;
@@ -238,7 +353,7 @@ class ExcelSheet {
             }
         }
 
-        return {cellColumnNo:cellColumnNo, cellRowNo:cellRowNo};
+        return { cellColumnNo: cellColumnNo, cellRowNo: cellRowNo };
     }
 
     getMouseMoveCoordinates(event) {
@@ -273,8 +388,10 @@ class ExcelSheet {
 
                 this.cellCtx.textBaseline = "top";
                 this.cellCtx.textAlign = "left";
-                this.cellCtx.font = "14px Arial";
+                this.cellCtx.font = "15px Arial";
+                // console.log(i, j);
                 this.cellCtx.fillStyle = "#000000";
+
                 this.cellCtx.fillText(this.dataArray[i][j], cumulativeColumnWidth + 4, cumulativeRowHeight + 4);
 
                 isFirstColFilled = true;
@@ -297,6 +414,8 @@ class ExcelSheet {
 
     getInputBox(event) {
         this.isMouseDownOnCellCanvas = true;
+        let inputBoxValue = this.inputBox.value;
+
         this.dataArray[this.cellPosInfo.cellRowNo][this.cellPosInfo.cellColumnNo] = this.inputBox.value;
 
         this.setCellPosInfo(event);
@@ -356,7 +475,7 @@ class ExcelSheet {
                 this.cellPosInfo.cellColumnNo = i;
                 this.cellPosInfo.cellPosX = cumulativeColumnWidth - this.colSizeArray[i];
                 this.startX = cumulativeColumnWidth - this.colSizeArray[i];
-                this.currColumnNo = i;
+                this.currColNo = i;
                 break;
             }
         }
@@ -704,4 +823,14 @@ myExcelSheet.nameRows();
 // Drawing Cells Canvas
 myExcelSheet.drawGridColumnLines(0, 560);
 myExcelSheet.drawGridRowLines(0, 1820);
+
+let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+for(let i=0;i<myExcelSheet.rowSizeArray.length;i++){
+    for(let j=0;j<myExcelSheet.colSizeArray.length;j++){
+        let randomNum = Math.floor(Math.random() * nums.length);
+        myExcelSheet.dataArray[i][j] = nums[randomNum];
+    }
+}
+
 myExcelSheet.renderData();
