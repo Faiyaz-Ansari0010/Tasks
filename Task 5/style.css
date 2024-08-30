@@ -17,20 +17,21 @@ body {
     width: 43px;
 }
 
-.outer-cell-container{
+#outer-cell-container {
     position: relative;
+
     bottom: 564px;
     left: 42.2px;
-    overflow: scroll;
+    width: 95.7%; 
+    height: 562px; 
+    overflow: scroll; 
 }
 
 #cell-container {
-    width: 1820px;
-    height: 561px;
+    width: 6000px;
+    height: 6000px;
     cursor: cell;
 }
-
-
 
 .sheet-corner {
     height: 30px;
@@ -83,4 +84,8 @@ body {
     display: flex;
     margin-left: 580px;
     cursor: pointer;
+}
+
+#demo{
+    margin-top: -543px;
 }
