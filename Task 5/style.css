@@ -3,7 +3,7 @@ body {
 }
 
 .sheet-container {
-    margin-top: 50px;
+    margin-top: 80px;
     position: relative;
 }
 
@@ -61,6 +61,30 @@ body {
 #bar-graph-btn {
     margin-left: 30px;
     margin-right: 10px;
+    cursor: pointer;
+}
+
+#line-graph-btn{
+    cursor: pointer;
+}
+
+.findNReplaceContainer{
+    display: flex;
+    margin-left: 259px;
+    margin-top: -21px;
+}
+
+#find-container{
+    margin-right: 20px;
+}
+
+#find-inputBox, #replace-inputBox{
+    margin-top: 3px;
+    width: 60px;
+}
+
+.clear-container{
+    margin-left: 20px;
 }
 
 .graphContainer {

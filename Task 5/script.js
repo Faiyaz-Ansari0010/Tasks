@@ -118,8 +118,124 @@ class ExcelSheet {
                 "<br>Y-Scroll " + element.scrollTop;
         })
 
+        this.cellsToReplace = [];
+        this.replaceButton = document.getElementById("replace-btn");
+        this.replaceInputBox = document.getElementById("replace-inputBox");
+        
+        this.cellsToSelect = [];
+        this.findButton = document.getElementById("find-btn");
+        this.findInputBox = document.getElementById("find-inputBox");
+
+        this.clearHighlightBtn = document.getElementById("clear-highlight-btn");
+        this.clearHighlightBtn.addEventListener('click', (event) =>{
+            if(this.findInputBox.value == ''){
+                return;
+            }
+            this.findInputBox.value = '';
+            this.replaceInputBox.value = '';
+            this.clearCellCanvas();
+            this.redrawCellCanvas();
+            this.renderData();
+        })
+
+        document.getElementById("find-btn-exit").addEventListener('click', (event) => {
+            document.getElementById("find-input-container").style.display = "none";
+        })
+
+        document.getElementById("replace-btn-exit").addEventListener('click', (event) => {
+            document.getElementById("replace-input-container").style.display = "none";
+        })
+
+        this.findButton.addEventListener('click', this.findElement.bind(this));
+
+        document.getElementById("replace-btn-exit").addEventListener('click', (event) => {
+            document.getElementById("replace-input-container").style.display = "none";
+        })
+
+        this.replaceButton.addEventListener('click', this.replaceElement.bind(this));
+
     };
     // Outside Constructor
+
+
+
+    replaceElement(event){
+        document.getElementById("replace-input-container").style.display = "block";
+        if(!this.replaceInputBox.value){
+            return;
+        }
+        
+        let findInputValue = this.findInputBox.value;
+        let replaceInputValue = this.replaceInputBox.value;
+        for(let i=0; i<this.dataArray.length;i++){
+            for(let j=0;j<this.dataArray[i].length;j++){
+                if(this.dataArray[i][j] == findInputValue){
+                    this.dataArray[i][j] = replaceInputValue;
+                    let cellNo = [i, j];
+                    this.cellsToReplace.push(cellNo);
+                }
+            }
+        }
+
+        this.clearCellCanvas();
+        this.redrawCellCanvas();
+        this.highlightElement(this.cellsToReplace);
+        this.renderData();
+    }
+
+    highlightElement(cellsToSelectArray){
+
+        this.clearCellCanvas();
+        this.redrawCellCanvas();
+
+        for(let cellNo = 0; cellNo<cellsToSelectArray.length;cellNo++){
+            
+            let rowNo = cellsToSelectArray[cellNo][0];
+            let colNo = cellsToSelectArray[cellNo][1];
+
+            let cumulativeColumnWidth = 0, cumulativeRowHeight = 0;
+            for(let i=0;i<rowNo;i++){
+                cumulativeRowHeight += this.rowSizeArray[i];
+            }
+
+            for(let j=0;j<colNo;j++){
+                cumulativeColumnWidth += this.colSizeArray[j];
+            }
+
+            // console.log(cumulativeRowHeight, cumulativeColumnWidth);
+        
+            this.cellCtx.fillStyle = "#c1e1d0";
+            this.cellCtx.fillRect(cumulativeColumnWidth+2, cumulativeRowHeight+2,
+                (this.colSizeArray[colNo])-4, (this.rowSizeArray[rowNo])-4
+            )
+        }
+
+        this.renderData();
+    }
+
+    findElement(event){
+        document.getElementById("find-input-container").style.display = "block";
+        if(!this.findInputBox.value){
+            return;
+        }
+        let flag = false;
+        
+        let findInputValue = this.findInputBox.value;
+        for(let i=0;i<this.dataArray.length;i++){
+            for(let j=0;j<this.dataArray[i].length;j++){
+                if(this.dataArray[i][j] == findInputValue){
+                    flag = true;
+                    console.log(this.dataArray[i][j], findInputValue)
+                    let cellIdx = [i, j];
+                    this.cellsToSelect.push(cellIdx);
+                }
+            }
+        }
+
+        if(flag==true){
+            this.highlightElement(this.cellsToSelect);
+        }
+    }
 
     handleYScroll(scrollY) {
         // console.log("handleYScroll triggered");
@@ -480,6 +596,7 @@ class ExcelSheet {
         this.redrawRowAndCellCanvas();
 
         this.drawCellBorder();
+        this.highlightElement(this.cellsToSelect);
         this.renderData();
     }
 
@@ -744,6 +861,7 @@ class ExcelSheet {
         this.clearColumnAndCellCanvas();
         this.redrawColumnAndCellCanvas();
         this.drawCellBorder();
+        this.highlightElement(this.cellsToSelect);
         this.renderData();
         this.inputBox.style.width = this.colSizeArray[this.cellPosInfo.cellColumnNo] + "px";
     }
