@@ -21,9 +21,9 @@ body {
     position: relative;
     bottom: 564px;
     left: 42.2px;
-    width: 95.7%; 
-    height: 562px; 
-    overflow: scroll; 
+    width: 95.7%;
+    height: 562px;
+    overflow: scroll;
 }
 
 #cell-container {
@@ -49,7 +49,7 @@ body {
     display: flex;
 }
 
-.calculatedInfo div{
+.calculatedInfo div {
     margin-right: 50px;
 }
 
@@ -64,26 +64,32 @@ body {
     cursor: pointer;
 }
 
-#line-graph-btn{
+#line-graph-btn {
     cursor: pointer;
 }
 
-.findNReplaceContainer{
+.findNReplaceContainer {
     display: flex;
     margin-left: 259px;
     margin-top: -21px;
 }
 
-#find-container{
+#find-container {
     margin-right: 20px;
 }
 
-#find-inputBox, #replace-inputBox{
+#find-inputBox,
+#replace-inputBox {
     margin-top: 3px;
     width: 60px;
 }
 
-.clear-container{
+#find-input-container,
+#replace-input-container {
+    display: none;
+}
+
+.clear-container {
     margin-left: 20px;
 }
 
@@ -109,6 +115,6 @@ body {
     cursor: pointer;
 }
 
-#demo{
+#demo {
     margin-top: -543px;
 }

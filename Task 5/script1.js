@@ -16,14 +16,13 @@ class ExcelSheet {
         this.cellCtx = this.cellCanvas.getContext("2d");
         this.cellCanvas.style.position = "sticky";
         this.cellCanvas.style.top = 0;
-        this.cellCanvas.style.left = 0;
 
         this.dataArray = [];
 
         // Initializing Data Array
-        for (let i = 0; i < this.rowSizeArray.length * 2; i++) {
+        for (let i = 0; i < this.rowSizeArray.length; i++) {
             this.dataArray[i] = [];
-            for (let j = 0; j < this.colSizeArray.length * 5; j++) {
+            for (let j = 0; j < this.colSizeArray.length; j++) {
                 this.dataArray[i][j] = "";
             }
         }
@@ -102,6 +101,7 @@ class ExcelSheet {
         this.exitGraphIcon.setAttribute("src", "exitIcon.jpg");
         this.exitGraphIconContainer.appendChild(this.exitGraphIcon);
         this.graphContainer.style.display = "none";
+        this.scrollY = 0;
 
         document.getElementById("bar-graph-btn").addEventListener('click', this.showBarGraph.bind(this));
         document.getElementById("line-graph-btn").addEventListener('click', this.showLineGraph.bind(this));
@@ -110,17 +110,25 @@ class ExcelSheet {
             this.graphContainer.style.display = "none";
         });
 
+        document.getElementById("outer-cell-container").addEventListener('scroll', (event) => {
+            const element = document.getElementById("outer-cell-container");
+            this.scrollY = element.scrollTop;
+            this.handleYScroll(element.scrollTop);
+            document.getElementById("demo").innerHTML = "X-Scroll " + element.scrollLeft +
+                "<br>Y-Scroll " + element.scrollTop;
+        })
+
         this.cellsToReplace = [];
         this.replaceButton = document.getElementById("replace-btn");
         this.replaceInputBox = document.getElementById("replace-inputBox");
-
+        
         this.cellsToSelect = [];
         this.findButton = document.getElementById("find-btn");
         this.findInputBox = document.getElementById("find-inputBox");
 
         this.clearHighlightBtn = document.getElementById("clear-highlight-btn");
-        this.clearHighlightBtn.addEventListener('click', (event) => {
-            if (this.findInputBox.value == '') {
+        this.clearHighlightBtn.addEventListener('click', (event) =>{
+            if(this.findInputBox.value == ''){
                 return;
             }
             this.findInputBox.value = '';
@@ -146,212 +154,22 @@ class ExcelSheet {
 
         this.replaceButton.addEventListener('click', this.replaceElement.bind(this));
 
-        this.scrollY = 0;
-        this.newRowStart = 0
-        this.newRowStart1 = 0;
-
-        this.scrollX = 0;
-        this.newColStart = 0;
-        this.newColStart1 = 0;
-
-        document.getElementById("outer-cell-container").addEventListener('scroll', (event) => {
-            const element = document.getElementById("outer-cell-container");
-            this.scrollY = element.scrollTop;
-            this.handleDivHeight(this.scrollY);
-            this.handleYScroll();
-
-            this.scrollX = element.scrollLeft;
-            this.handleDivWidth(this.scrollX);
-            this.handleXScroll();
-
-            document.getElementById("demo").innerHTML = "X-Scroll " + element.scrollLeft +
-                "<br>Y-Scroll " + element.scrollTop;
-        })
     };
     // Outside Constructor
 
-    handleDivWidth(scrollX) {
-        let cellContainer = document.getElementById("cell-container");
-        let currentWidth = window.getComputedStyle(cellContainer).width;
-        let numericWidth = parseInt(currentWidth);
-        if (scrollX > (numericWidth - 2000)) {
-            cellContainer.style.width = numericWidth + 6000 + 'px';
-        }
-    }
-
-    handleXScroll() {
-
-        // Horizontal scrolling Column Canvas
-        // console.log(this.colSizeArray.length);
-        console.log(this.scrollX)
-        this.clearColCanvas();
-        this.redrawColCanvas(this.scrollX);
-        let cumulativeColWidtht1 = 0;
-        for (let i = 0; i < this.colSizeArray.length; i++) {
-            cumulativeColWidtht1 += this.colSizeArray[i];
-            if (cumulativeColWidtht1 > this.scrollX) {
-                this.newColStart1 = i;
-                break;
-            }
-        }
-
-        for (let i = 0; i < this.newColStart1; i++) {
-            this.colSizeArray.push(65);
-        }
-
-        this.nameColumns(this.newColStart1);
-
-        // Horizontal scrolling Cell Canvas
-        this.clearCellCanvas();
-        this.redrawCellCanvas(this.scrollY, this.scrollX);
-
-        let cumulativeColumnWidth = 0;
-        for (let i = 0; i < this.colSizeArray.length; i++) {
-            cumulativeColumnWidth += this.colSizeArray[i];
-            if (cumulativeColumnWidth > this.scrollX) {
-                this.newColStart = i;
-                break;
-            }
-        }
-        this.renderData(this.newRowStart, this.newColStart);
-    }
-
-    handleDivHeight(scrollY) {
-        let cellContainer = document.getElementById("cell-container");
-        let currentHeight = window.getComputedStyle(cellContainer).height;
-        let numericHeight = parseInt(currentHeight);
-        if (scrollY > (numericHeight - 1000)) {
-            cellContainer.style.height = numericHeight + 6000 + 'px';
-        }
-    }
-
-    handleYScroll() {
-
-        // Vertical scrolling Row Canvas
-        this.clearRowCanvas();
-        this.redrawRowCanvas(this.scrollY);
-        let cumulativeRowHeight1 = 0;
-        for (let i = 0; i < this.rowSizeArray.length; i++) {
-            cumulativeRowHeight1 += this.rowSizeArray[i];
-            if (cumulativeRowHeight1 > this.scrollY) {
-                this.newRowStart1 = i;
-                break;
-            }
-        }
-
-        for (let i = 0; i < this.newRowStart1; i++) {
-            this.rowSizeArray.push(20);
-        }
-
-        this.nameRows(this.newRowStart1);
-
-        // Vertical scrolling Cell Canvas
-        this.clearCellCanvas();
-        this.redrawCellCanvas(this.scrollY, this.scrollX);
-
-        let cumulativeRowHeight = 0;
-        for (let i = 0; i < this.rowSizeArray.length; i++) {
-            cumulativeRowHeight += this.rowSizeArray[i];
-            if (cumulativeRowHeight > this.scrollY) {
-                this.newRowStart = i;
-                break;
-            }
-        }
-        this.renderData(this.newRowStart, this.newColStart);
-    }
-
-    clearCellCanvas() {
-        this.cellCtx.clearRect(0, 0, 1820, 560);
-    }
-
-    redrawCellCanvas(scrollY, scrollX) {
-        this.drawGridColumnLines(0, 560, scrollX);
-        this.drawGridRowLines(0, 1820, scrollY);
-    }
-
-    clearRowCanvas() {
-        this.rowCtx.clearRect(0, 0, this.rowCanvas.width, this.rowCanvas.height);
-    }
-
-    clearColCanvas() {
-        this.columnCtx.clearRect(0, 0, this.columnCanvas.width, this.columnCanvas.height);
-    }
-
-    redrawRowCanvas(scrollY) {
-        this.rowCtx.fillStyle = "#ebebeb";
-        this.rowCtx.fillRect(0, 0, this.rowCanvas.width, this.rowCanvas.height);
-        this.drawRowLines(0, 43, scrollY);
-        this.drawRowBoundary(43, 0, 43, 560);
-    }
-
-    redrawColCanvas(scrollX) {
-        this.columnCtx.fillStyle = "#ebebeb";
-        this.columnCtx.fillRect(0, 0, this.columnCanvas.width, this.columnCanvas.height);
-        this.drawColumnLines(10, 30, scrollX);
-        this.drawColumnBoundary(0, 30, 1820, 30);
-    }
 
 
-    // renderData(startRow = 0, startCol = 0) {
-    //     let cumulativeRowHeight = -1 * this.rowSizeArray[0], cumulativeColumnWidth = -1 * this.colSizeArray[0];
-    //     // console.log(this.scrollY);
-    //     for (let i = startRow; i < this.rowSizeArray.length; i++) {
-    //         // console.log(i);
-    //         cumulativeRowHeight += this.rowSizeArray[i];
-
-    //         for (let j = startCol; j < this.colSizeArray.length; j++) {
-    //             cumulativeColumnWidth += this.colSizeArray[j];
-
-    //             this.cellCtx.textBaseline = "top";
-    //             this.cellCtx.textAlign = "left";
-    //             this.cellCtx.font = "15px Arial";
-    //             // console.log(i, j);
-    //             this.cellCtx.fillStyle = "#000000";
-    //             // console.log(j)
-
-    //             this.cellCtx.fillText(this.dataArray[i][j], cumulativeColumnWidth + 4 - this.scrollX, cumulativeRowHeight + 4 - this.scrollY);
-    //         }
-    //         cumulativeColumnWidth = -1 * this.colSizeArray[0];
-    //     }
-    // }
-
-    renderData(startRow = 0, startCol = 0) {
-        let cumulativeRowHeight = -1 * this.rowSizeArray[0], cumulativeColumnWidth = -1 * this.colSizeArray[0];
-
-        // Loop through rows and ensure i is within bounds of dataArray
-        for (let i = startRow; i < this.rowSizeArray.length && i < this.dataArray.length; i++) {
-            cumulativeRowHeight += this.rowSizeArray[i];
-
-            // Loop through columns and ensure j is within bounds of dataArray[i]
-            for (let j = startCol; j < this.colSizeArray.length && j < this.dataArray[i].length; j++) {
-                cumulativeColumnWidth += this.colSizeArray[j];
-
-                this.cellCtx.textBaseline = "top";
-                this.cellCtx.textAlign = "left";
-                this.cellCtx.font = "15px Arial";
-                this.cellCtx.fillStyle = "#000000";
-
-                // Render data if it exists
-                if (this.dataArray[i] && this.dataArray[i][j] !== undefined) {
-                    this.cellCtx.fillText(this.dataArray[i][j], cumulativeColumnWidth + 4 - this.scrollX, cumulativeRowHeight + 4 - this.scrollY);
-                }
-            }
-            cumulativeColumnWidth = -1 * this.colSizeArray[0];
-        }
-    }
-
-
-    replaceElement(event) {
+    replaceElement(event){
         document.getElementById("replace-input-container").style.display = "block";
-        if (!this.replaceInputBox.value) {
+        if(!this.replaceInputBox.value){
             return;
         }
-
+        
         let findInputValue = this.findInputBox.value;
         let replaceInputValue = this.replaceInputBox.value;
-        for (let i = 0; i < this.dataArray.length; i++) {
-            for (let j = 0; j < this.dataArray[i].length; j++) {
-                if (this.dataArray[i][j] == findInputValue) {
+        for(let i=0; i<this.dataArray.length;i++){
+            for(let j=0;j<this.dataArray[i].length;j++){
+                if(this.dataArray[i][j] == findInputValue){
                     this.dataArray[i][j] = replaceInputValue;
                     let cellNo = [i, j];
                     this.cellsToReplace.push(cellNo);
@@ -365,47 +183,47 @@ class ExcelSheet {
         this.renderData();
     }
 
-    highlightElement(cellsToSelectArray) {
+    highlightElement(cellsToSelectArray){
 
         this.clearCellCanvas();
         this.redrawCellCanvas();
 
-        for (let cellNo = 0; cellNo < cellsToSelectArray.length; cellNo++) {
-
+        for(let cellNo = 0; cellNo<cellsToSelectArray.length;cellNo++){
+            
             let rowNo = cellsToSelectArray[cellNo][0];
             let colNo = cellsToSelectArray[cellNo][1];
 
             let cumulativeColumnWidth = 0, cumulativeRowHeight = 0;
-            for (let i = 0; i < rowNo; i++) {
+            for(let i=0;i<rowNo;i++){
                 cumulativeRowHeight += this.rowSizeArray[i];
             }
 
-            for (let j = 0; j < colNo; j++) {
+            for(let j=0;j<colNo;j++){
                 cumulativeColumnWidth += this.colSizeArray[j];
             }
 
             // console.log(cumulativeRowHeight, cumulativeColumnWidth);
-
+        
             this.cellCtx.fillStyle = "#c1e1d0";
-            this.cellCtx.fillRect(cumulativeColumnWidth + 2, cumulativeRowHeight + 2,
-                (this.colSizeArray[colNo]) - 4, (this.rowSizeArray[rowNo]) - 4
+            this.cellCtx.fillRect(cumulativeColumnWidth+2, cumulativeRowHeight+2,
+                (this.colSizeArray[colNo])-4, (this.rowSizeArray[rowNo])-4
             )
         }
 
         this.renderData();
     }
 
-    findElement(event) {
+    findElement(event){
         document.getElementById("find-input-container").style.display = "block";
-        if (!this.findInputBox.value) {
+        if(!this.findInputBox.value){
             return;
         }
         let flag = false;
-
+        
         let findInputValue = this.findInputBox.value;
-        for (let i = 0; i < this.dataArray.length; i++) {
-            for (let j = 0; j < this.dataArray[i].length; j++) {
-                if (this.dataArray[i][j] == findInputValue) {
+        for(let i=0;i<this.dataArray.length;i++){
+            for(let j=0;j<this.dataArray[i].length;j++){
+                if(this.dataArray[i][j] == findInputValue){
                     flag = true;
                     console.log(this.dataArray[i][j], findInputValue)
                     let cellIdx = [i, j];
@@ -414,10 +232,96 @@ class ExcelSheet {
             }
         }
 
-        if (flag == true) {
+        if(flag==true){
             this.highlightElement(this.cellsToSelect);
         }
     }
+
+    handleYScroll(scrollY) {
+        // console.log("handleYScroll triggered");
+        this.clearCellCanvas();
+        this.redrawCellCanvas(this.scrollY);
+
+        let cumulativeRowHeight = 0, newRowStart = -1;
+        for (let i = 0; i < this.rowSizeArray.length; i++) {
+            cumulativeRowHeight += this.rowSizeArray[i];
+            if (cumulativeRowHeight > scrollY) {
+                newRowStart = i;
+                break;
+            }
+        }
+
+        this.renderData(newRowStart, 0);
+    }
+
+    redrawCellCanvas(scrollY) {
+        this.drawGridColumnLines(0, 560);
+        this.drawGridRowLines(0, 1820);
+    }
+
+    clearCellCanvas() {
+        this.cellCtx.clearRect(0, 0, 1820, 560);
+    }
+
+    renderData(startRow = 0, startCol = 0) {
+        let cumulativeRowHeight = -1 * this.rowSizeArray[0], cumulativeColumnWidth = -1 * this.colSizeArray[0];
+        // console.log(this.scrollY);
+        for (let i = startRow; i < this.rowSizeArray.length; i++) {
+
+            cumulativeRowHeight += this.rowSizeArray[i];
+
+            for (let j = startCol; j < this.colSizeArray.length; j++) {
+                cumulativeColumnWidth += this.colSizeArray[j];
+
+                this.cellCtx.textBaseline = "top";
+                this.cellCtx.textAlign = "left";
+                this.cellCtx.font = "15px Arial";
+                // console.log(i, j);
+                this.cellCtx.fillStyle = "#000000";
+
+                this.cellCtx.fillText(this.dataArray[i][j], cumulativeColumnWidth + 4, cumulativeRowHeight + 4);
+            }
+            cumulativeColumnWidth = -1 * this.colSizeArray[0];
+        }
+    }
+
+    // renderData(startRow=0, startCol=0) {
+    //     let cumulativeRowHeight, cumulativeColumnWidth;
+    //     let isFirstColFilled = false, isFirstRowFilled = false;
+
+    //     for (let i = startRow; i < this.rowSizeArray.length; i++) {
+
+    //         if (isFirstRowFilled == false) {
+    //             cumulativeRowHeight = 0;
+    //         }
+    //         else {
+    //             cumulativeRowHeight += this.rowSizeArray[i];
+    //         }
+
+    //         for (let j = startCol; j < this.colSizeArray.length; j++) {
+
+    //             if (isFirstColFilled == false) {
+    //                 cumulativeColumnWidth = 0;
+    //             }
+    //             else {
+    //                 cumulativeColumnWidth += this.colSizeArray[j];
+    //             }
+
+    //             this.cellCtx.textBaseline = "top";
+    //             this.cellCtx.textAlign = "left";
+    //             this.cellCtx.font = "15px Arial";
+    //             // console.log(i, j);
+    //             this.cellCtx.fillStyle = "#000000";
+
+    //             this.cellCtx.fillText(this.dataArray[i][j], cumulativeColumnWidth + 4, cumulativeRowHeight + 4);
+    //             console.log(this.dataArray[i][j]);
+    //             isFirstColFilled = true;
+    //         }
+
+    //         isFirstRowFilled = true;
+    //         isFirstColFilled = false;
+    //     }
+    // }
 
     selectCellsBorder(currRowNo, currColumnNo, mouseMoveCellRow, mouseMoveCellCol) {
         let drawX = 0, drawY = 0, startX = 0, startY = 0, totalX = 0, totalY = 0;
@@ -513,13 +417,11 @@ class ExcelSheet {
 
         let currInputBoxValue = this.dataArray[cellRowNo][cellColNo];
         this.dataArray[cellRowNo][cellColNo] = "";
-        // this.clearColumnAndCellCanvas();
-        // this.clearRowAndCellCanvas();
-        this.clearCellCanvas();
+        this.clearColumnAndCellCanvas();
+        this.clearRowAndCellCanvas();
         this.inputBox.value = currInputBoxValue;
-        // this.redrawColumnAndCellCanvas();
-        // this.redrawRowAndCellCanvas();
-        this.redrawCellCanvas();
+        this.redrawColumnAndCellCanvas();
+        this.redrawRowAndCellCanvas();
         this.renderData();
         this.drawCellBorder()
         this.dataArray[cellRowNo][cellColNo] = currInputBoxValue;
@@ -973,50 +875,47 @@ class ExcelSheet {
         this.columnCtx.stroke();
     }
 
-    drawColumnLines(moveToY, lineToY, scrollX = 0) {
+    drawColumnLines(moveToY, lineToY) {
         let accumulatedColumnWidth = 0;
         for (let i = 0; i < this.colSizeArray.length; i++) {
             accumulatedColumnWidth += this.colSizeArray[i];
             this.columnCtx.beginPath();
-            this.columnCtx.moveTo(accumulatedColumnWidth - scrollX, moveToY);
-            this.columnCtx.lineTo(accumulatedColumnWidth - scrollX, lineToY);
+            this.columnCtx.moveTo(accumulatedColumnWidth, moveToY);
+            this.columnCtx.lineTo(accumulatedColumnWidth, lineToY);
             this.columnCtx.strokeStyle = "#bcbcbc";
             this.cellCtx.lineWidth = 1;
             this.columnCtx.stroke();
         }
     }
 
-    nameColumns(newColStart = 0) {
-        console.log(newColStart);
+    nameColumns() {
         this.columnCtx.font = "14px Arial";
-        this.columnCtx.textAlign = "center";
-        this.columnCtx.textBaseline = "middle";
-        this.columnCtx.fillStyle = "#616161";
-    
-        let cumulativeColumnWidth = 0;
+
+        let prefixColumnName = "", columnIdx = 0, j = 0, cumulativeColumnWidth = 0;
         let prevCumulativeColumnWidth = 0;
-    
-        for (let j = newColStart; j < this.colSizeArray.length; j++) {
+
+        this.rowCtx.textAlign = "center";
+        this.rowCtx.textBaseline = "middle";
+
+        while (columnIdx < this.colSizeArray.length && j < this.colSizeArray.length) {
             cumulativeColumnWidth += this.colSizeArray[j];
             prevCumulativeColumnWidth = cumulativeColumnWidth - this.colSizeArray[j];
-    
-            let columnName = this.getColumnName(j + newColStart);  
-    
-            let left = prevCumulativeColumnWidth + ((cumulativeColumnWidth - prevCumulativeColumnWidth) / 2);
-    
-            this.columnCtx.fillText(columnName, left - this.scrollX, 21);
+            let currColumnName = "";
+            let currLetter = String.fromCharCode(65 + columnIdx);
+            currColumnName = prefixColumnName + currLetter;
+
+            if (currLetter == "Z") {
+                prefixColumnName += "A";
+                columnIdx = -1;
+            }
+
+            this.columnCtx.fillStyle = "#616161";
+            this.columnCtx.fillText(currColumnName,
+                (prevCumulativeColumnWidth + ((cumulativeColumnWidth - prevCumulativeColumnWidth) / 2)), 25);
+            columnIdx++;
+            j++;
         }
     }
-    
-    getColumnName(index) {
-        let columnName = '';
-        while (index >= 0) {
-            columnName = String.fromCharCode((index % 26) + 65) + columnName;
-            index = Math.floor(index / 26) - 1;
-        }
-        return columnName;
-    }
-    
 
     drawRowBoundary(moveToX, moveToY, lineToX, lineToY) {
         this.rowCtx.beginPath();
@@ -1027,42 +926,42 @@ class ExcelSheet {
         this.rowCtx.stroke();
     }
 
-    drawRowLines(moveToX, lineToX, scrollY = 0) {
+    drawRowLines(moveToX, lineToX) {
         let accumulatedRowHeight = 0;
         for (let i = 0; i < this.rowSizeArray.length; i++) {
             accumulatedRowHeight += this.rowSizeArray[i];
             this.rowCtx.beginPath();
-            this.rowCtx.moveTo(moveToX, accumulatedRowHeight - scrollY);
-            this.rowCtx.lineTo(lineToX, accumulatedRowHeight - scrollY);
+            this.rowCtx.moveTo(moveToX, accumulatedRowHeight);
+            this.rowCtx.lineTo(lineToX, accumulatedRowHeight);
             this.rowCtx.strokeStyle = "#bcbcbc";
             this.cellCtx.lineWidth = 1;
             this.rowCtx.stroke();
         }
     }
 
-    nameRows(newRowStart = 0) {
+    nameRows() {
         this.rowCtx.font = "14px Arial";
         this.rowCtx.textAlign = "center";
         this.rowCtx.textBaseline = "middle";
-        let rowIdx = newRowStart, prevCumulativeRowHeight = 0, cumulativeRowHeight = 0;
+        let rowIdx = 0, prevCumulativeRowHeight = 0, cumulativeRowHeight = 0;
 
         while (rowIdx < this.rowSizeArray.length) {
             cumulativeRowHeight += this.rowSizeArray[rowIdx];
             prevCumulativeRowHeight = cumulativeRowHeight - this.rowSizeArray[rowIdx];
             this.rowCtx.fillStyle = "#616161";
             let top = prevCumulativeRowHeight + ((cumulativeRowHeight - prevCumulativeRowHeight) / 2)
-            this.rowCtx.fillText(rowIdx + 1, 25, top - this.scrollY);
+            this.rowCtx.fillText(rowIdx + 1, 25, top);
             rowIdx++;
         }
     }
 
-    drawGridColumnLines(moveToY, lineToY, scrollX = 0) {
+    drawGridColumnLines(moveToY, lineToY) {
         let accumulatedColumnWidth = 0;
         for (let i = 0; i < this.colSizeArray.length; i++) {
             accumulatedColumnWidth += this.colSizeArray[i];
             this.cellCtx.beginPath();
-            this.cellCtx.moveTo(accumulatedColumnWidth - scrollX, moveToY);
-            this.cellCtx.lineTo(accumulatedColumnWidth - scrollX, lineToY);
+            this.cellCtx.moveTo(accumulatedColumnWidth, moveToY);
+            this.cellCtx.lineTo(accumulatedColumnWidth, lineToY);
             this.cellCtx.lineWidth = 1;
             this.cellCtx.strokeStyle = "#bcbcbc";
             this.cellCtx.stroke();
@@ -1071,6 +970,7 @@ class ExcelSheet {
 
     drawGridRowLines(moveToX, lineToX, scrollY = 0) {
         let accumulatedRowHeight = 0;
+        // console.log(scrollY);
         for (let i = 0; i < this.rowSizeArray.length; i++) {
             accumulatedRowHeight += this.rowSizeArray[i];
             this.cellCtx.beginPath();
@@ -1102,12 +1002,12 @@ myExcelSheet.nameRows();
 myExcelSheet.drawGridColumnLines(0, 560);
 myExcelSheet.drawGridRowLines(0, 1820);
 
-let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-for (let i = 0; i < myExcelSheet.rowSizeArray.length * 2; i++) {
-    for (let j = 0; j < myExcelSheet.colSizeArray.length * 5; j++) {
+for (let i = 0; i < myExcelSheet.rowSizeArray.length; i++) {
+    for (let j = 0; j < myExcelSheet.colSizeArray.length; j++) {
         let randomNum = Math.floor(Math.random() * nums.length);
-        myExcelSheet.dataArray[i][j] = randomNum;
+        myExcelSheet.dataArray[i][j] = nums[randomNum];
     }
 }
 
