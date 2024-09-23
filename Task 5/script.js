@@ -18,16 +18,6 @@ class ExcelSheet {
         this.cellCanvas.style.top = 0;
         this.cellCanvas.style.left = 0;
 
-        this.dataArray = [];
-
-        // Initializing Data Array
-        for (let i = 0; i < this.rowSizeArray.length * 2; i++) {
-            this.dataArray[i] = [];
-            for (let j = 0; j < this.colSizeArray.length * 5; j++) {
-                this.dataArray[i][j] = "";
-            }
-        }
-
         this.mouseDownOnColumnXPos = 0;
         this.mouseMoveOnColumnXPos = 0;
         this.mouseMoveOnColumnYPos = 0;
@@ -88,8 +78,6 @@ class ExcelSheet {
         });
 
         this.selectedCellsArray = new Array();
-
-        // document.getElementById("calculate-button").addEventListener('click', this.performCalculations.bind(this));
 
         this.graphContainer = this.createElement("div", "", "graphContainer");
         document.getElementById("cell-container").appendChild(this.graphContainer);
@@ -167,8 +155,133 @@ class ExcelSheet {
             document.getElementById("demo").innerHTML = "X-Scroll " + element.scrollLeft +
                 "<br>Y-Scroll " + element.scrollTop;
         })
+
+        this.dataArray = [];
+        for (let i = 0; i < 100001; i++) {
+            this.dataArray[i] = [];
+            for (let j = 0; j < 13; j++) {
+                this.dataArray[i][j] = "";
+            }
+        }
+
+        this.form = document.getElementById('csvForm');
+
+        this.form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('csvFile');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            fetch('https://localhost:7018/api/UserRecords/upload', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    alert('File uploaded successfully');
+                    this.fetchData(0, 27);
+                }
+            });
+        });
+
+        this.init();
     };
     // Outside Constructor
+
+    init() {
+        console.log("init called");
+        // Drawing Column Canvas
+        this.drawColumnBoundary(0, 30, 1820, 30);
+        this.drawColumnLines(10, 30);
+        this.nameColumns();
+
+        // Drawing Row Canvas
+        this.drawRowBoundary(43, 0, 43, 560);
+        this.drawRowLines(0, 43);
+        this.nameRows();
+
+        // Drawing Cells Canvas
+        this.drawGridColumnLines(0, 560);
+        this.drawGridRowLines(0, 1820);
+
+        this.renderData();
+    }
+
+    fetchData(startRow, rowCount = this.rowSizeArray.length) {
+        fetch(`https://localhost:7018/api/UserRecords?startRow=${startRow}&rowCount=${rowCount}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach((record, rowIndex) => {
+                    this.dataArray[startRow + rowIndex] = Object.values(record);
+                });
+
+            });
+    }
+
+    renderData(startRow = 0, startCol = 0) {
+        let cumulativeRowHeight = -1 * this.rowSizeArray[0], cumulativeColumnWidth = -1 * this.colSizeArray[0];
+
+        for (let i = startRow; i < this.rowSizeArray.length && i < this.dataArray.length; i++) {
+            cumulativeRowHeight += this.rowSizeArray[i];
+
+            for (let j = startCol; j < this.colSizeArray.length && j < this.dataArray[i].length; j++) {
+                cumulativeColumnWidth += this.colSizeArray[j];
+
+                this.cellCtx.save();
+
+                this.cellCtx.beginPath();
+                this.cellCtx.rect(cumulativeColumnWidth - this.scrollX, cumulativeRowHeight - this.scrollY, this.colSizeArray[j], this.rowSizeArray[i]);
+                this.cellCtx.clip();
+
+                this.cellCtx.textBaseline = "top";
+                this.cellCtx.textAlign = "left";
+                this.cellCtx.font = "15px Arial";
+                this.cellCtx.fillStyle = "#000000";
+
+                if (this.dataArray[i] && this.dataArray[i][j] !== undefined) {
+                    this.cellCtx.fillText(this.dataArray[i][j], cumulativeColumnWidth + 4 - this.scrollX, cumulativeRowHeight + 4 - this.scrollY);
+                }
+
+                this.cellCtx.restore();
+            }
+            cumulativeColumnWidth = -1 * this.colSizeArray[0];
+        }
+    }
+
+    handleYScroll() {
+
+        // Vertical scrolling Row Canvas
+        this.clearRowCanvas();
+        this.redrawRowCanvas(this.scrollY);
+        let cumulativeRowHeight1 = 0;
+        for (let i = 0; i < this.rowSizeArray.length; i++) {
+            cumulativeRowHeight1 += this.rowSizeArray[i];
+            if (cumulativeRowHeight1 > this.scrollY) {
+                this.newRowStart1 = i;
+                break;
+            }
+        }
+
+        for (let i = 0; i < this.newRowStart1; i++) {
+            this.rowSizeArray.push(20);
+        }
+
+        this.nameRows(this.newRowStart1);
+
+        // Vertical scrolling Cell Canvas
+        this.clearCellCanvas();
+        this.redrawCellCanvas(this.scrollY, this.scrollX);
+
+        let cumulativeRowHeight = 0;
+        for (let i = 0; i < this.rowSizeArray.length; i++) {
+            cumulativeRowHeight += this.rowSizeArray[i];
+            if (cumulativeRowHeight > this.scrollY) {
+                this.newRowStart = i;
+                break;
+            }
+        }
+        this.fetchData(this.newRowStart);
+        this.renderData(this.newRowStart, this.newColStart);
+    }
 
     handleDivWidth(scrollX) {
         let cellContainer = document.getElementById("cell-container");
@@ -183,7 +296,7 @@ class ExcelSheet {
 
         // Horizontal scrolling Column Canvas
         // console.log(this.colSizeArray.length);
-        console.log(this.scrollX)
+        // console.log(this.scrollX)
         this.clearColCanvas();
         this.redrawColCanvas(this.scrollX);
         let cumulativeColWidtht1 = 0;
@@ -225,41 +338,6 @@ class ExcelSheet {
         }
     }
 
-    handleYScroll() {
-
-        // Vertical scrolling Row Canvas
-        this.clearRowCanvas();
-        this.redrawRowCanvas(this.scrollY);
-        let cumulativeRowHeight1 = 0;
-        for (let i = 0; i < this.rowSizeArray.length; i++) {
-            cumulativeRowHeight1 += this.rowSizeArray[i];
-            if (cumulativeRowHeight1 > this.scrollY) {
-                this.newRowStart1 = i;
-                break;
-            }
-        }
-
-        for (let i = 0; i < this.newRowStart1; i++) {
-            this.rowSizeArray.push(20);
-        }
-
-        this.nameRows(this.newRowStart1);
-
-        // Vertical scrolling Cell Canvas
-        this.clearCellCanvas();
-        this.redrawCellCanvas(this.scrollY, this.scrollX);
-
-        let cumulativeRowHeight = 0;
-        for (let i = 0; i < this.rowSizeArray.length; i++) {
-            cumulativeRowHeight += this.rowSizeArray[i];
-            if (cumulativeRowHeight > this.scrollY) {
-                this.newRowStart = i;
-                break;
-            }
-        }
-        this.renderData(this.newRowStart, this.newColStart);
-    }
-
     clearCellCanvas() {
         this.cellCtx.clearRect(0, 0, 1820, 560);
     }
@@ -290,56 +368,6 @@ class ExcelSheet {
         this.drawColumnLines(10, 30, scrollX);
         this.drawColumnBoundary(0, 30, 1820, 30);
     }
-
-
-    // renderData(startRow = 0, startCol = 0) {
-    //     let cumulativeRowHeight = -1 * this.rowSizeArray[0], cumulativeColumnWidth = -1 * this.colSizeArray[0];
-    //     // console.log(this.scrollY);
-    //     for (let i = startRow; i < this.rowSizeArray.length; i++) {
-    //         // console.log(i);
-    //         cumulativeRowHeight += this.rowSizeArray[i];
-
-    //         for (let j = startCol; j < this.colSizeArray.length; j++) {
-    //             cumulativeColumnWidth += this.colSizeArray[j];
-
-    //             this.cellCtx.textBaseline = "top";
-    //             this.cellCtx.textAlign = "left";
-    //             this.cellCtx.font = "15px Arial";
-    //             // console.log(i, j);
-    //             this.cellCtx.fillStyle = "#000000";
-    //             // console.log(j)
-
-    //             this.cellCtx.fillText(this.dataArray[i][j], cumulativeColumnWidth + 4 - this.scrollX, cumulativeRowHeight + 4 - this.scrollY);
-    //         }
-    //         cumulativeColumnWidth = -1 * this.colSizeArray[0];
-    //     }
-    // }
-
-    renderData(startRow = 0, startCol = 0) {
-        let cumulativeRowHeight = -1 * this.rowSizeArray[0], cumulativeColumnWidth = -1 * this.colSizeArray[0];
-
-        // Loop through rows and ensure i is within bounds of dataArray
-        for (let i = startRow; i < this.rowSizeArray.length && i < this.dataArray.length; i++) {
-            cumulativeRowHeight += this.rowSizeArray[i];
-
-            // Loop through columns and ensure j is within bounds of dataArray[i]
-            for (let j = startCol; j < this.colSizeArray.length && j < this.dataArray[i].length; j++) {
-                cumulativeColumnWidth += this.colSizeArray[j];
-
-                this.cellCtx.textBaseline = "top";
-                this.cellCtx.textAlign = "left";
-                this.cellCtx.font = "15px Arial";
-                this.cellCtx.fillStyle = "#000000";
-
-                // Render data if it exists
-                if (this.dataArray[i] && this.dataArray[i][j] !== undefined) {
-                    this.cellCtx.fillText(this.dataArray[i][j], cumulativeColumnWidth + 4 - this.scrollX, cumulativeRowHeight + 4 - this.scrollY);
-                }
-            }
-            cumulativeColumnWidth = -1 * this.colSizeArray[0];
-        }
-    }
-
 
     replaceElement(event) {
         document.getElementById("replace-input-container").style.display = "block";
@@ -407,7 +435,7 @@ class ExcelSheet {
             for (let j = 0; j < this.dataArray[i].length; j++) {
                 if (this.dataArray[i][j] == findInputValue) {
                     flag = true;
-                    console.log(this.dataArray[i][j], findInputValue)
+                    // console.log(this.dataArray[i][j], findInputValue)
                     let cellIdx = [i, j];
                     this.cellsToSelect.push(cellIdx);
                 }
@@ -987,27 +1015,27 @@ class ExcelSheet {
     }
 
     nameColumns(newColStart = 0) {
-        console.log(newColStart);
+        // console.log(newColStart);
         this.columnCtx.font = "14px Arial";
         this.columnCtx.textAlign = "center";
         this.columnCtx.textBaseline = "middle";
         this.columnCtx.fillStyle = "#616161";
-    
+
         let cumulativeColumnWidth = 0;
         let prevCumulativeColumnWidth = 0;
-    
+
         for (let j = newColStart; j < this.colSizeArray.length; j++) {
             cumulativeColumnWidth += this.colSizeArray[j];
             prevCumulativeColumnWidth = cumulativeColumnWidth - this.colSizeArray[j];
-    
-            let columnName = this.getColumnName(j + newColStart);  
-    
+
+            let columnName = this.getColumnName(j + newColStart);
+
             let left = prevCumulativeColumnWidth + ((cumulativeColumnWidth - prevCumulativeColumnWidth) / 2);
-    
+
             this.columnCtx.fillText(columnName, left - this.scrollX, 21);
         }
     }
-    
+
     getColumnName(index) {
         let columnName = '';
         while (index >= 0) {
@@ -1016,7 +1044,6 @@ class ExcelSheet {
         }
         return columnName;
     }
-    
 
     drawRowBoundary(moveToX, moveToY, lineToX, lineToY) {
         this.rowCtx.beginPath();
@@ -1083,32 +1110,33 @@ class ExcelSheet {
     }
 }
 
-/**
- * @type{object} - The entire excel sheet
- */
-const myExcelSheet = new ExcelSheet();
+document.addEventListener("DOMContentLoaded", function () {
+    const myExcelSheet = new ExcelSheet();
+});
 
-// Drawing Column Canvas
-myExcelSheet.drawColumnBoundary(0, 30, 1820, 30);
-myExcelSheet.drawColumnLines(10, 30);
-myExcelSheet.nameColumns();
+// const myExcelSheet = new ExcelSheet();
 
-// Drawing Row Canvas
-myExcelSheet.drawRowBoundary(43, 0, 43, 560);
-myExcelSheet.drawRowLines(0, 43);
-myExcelSheet.nameRows();
+// // Drawing Column Canvas
+// myExcelSheet.drawColumnBoundary(0, 30, 1820, 30);
+// myExcelSheet.drawColumnLines(10, 30);
+// myExcelSheet.nameColumns();
 
-// Drawing Cells Canvas
-myExcelSheet.drawGridColumnLines(0, 560);
-myExcelSheet.drawGridRowLines(0, 1820);
+// // Drawing Row Canvas
+// myExcelSheet.drawRowBoundary(43, 0, 43, 560);
+// myExcelSheet.drawRowLines(0, 43);
+// myExcelSheet.nameRows();
 
-let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+// // Drawing Cells Canvas
+// myExcelSheet.drawGridColumnLines(0, 560);
+// myExcelSheet.drawGridRowLines(0, 1820);
 
-for (let i = 0; i < myExcelSheet.rowSizeArray.length * 2; i++) {
-    for (let j = 0; j < myExcelSheet.colSizeArray.length * 5; j++) {
-        let randomNum = Math.floor(Math.random() * nums.length);
-        myExcelSheet.dataArray[i][j] = randomNum;
-    }
-}
+// // let nums = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
 
-myExcelSheet.renderData();
+// // for(let i=0;i<100;i++){
+// //     for(let j=0;j<100;j++){
+// //         let idx = Math.floor(Math.random()*nums.length);
+// //         myExcelSheet.dataArray[i][j] = nums[idx];
+// //     }
+// // }
+
+// myExcelSheet.renderData();
