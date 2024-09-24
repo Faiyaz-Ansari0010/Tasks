@@ -7,6 +7,7 @@ class ExcelSheet {
         this.columnCtx.fillRect(0, 0, this.columnCanvas.width, this.columnCanvas.height);
 
         this.rowCanvas = document.getElementById("row-canvas");
+        this.rowCanvas.setAttribute('tabindex', '0');
         this.rowCtx = this.rowCanvas.getContext("2d");
         this.rowSizeArray = Array(28).fill(20);
         this.rowCtx.fillStyle = "#ebebeb";
@@ -25,6 +26,7 @@ class ExcelSheet {
 
         this.mouseDownOnRowYPos = 0;
         this.mouseMoveOnRowYPos = 0;
+        this.isMouseMoveOnRow = false;
         this.mouseMoveOnRowXPos = 0;
         this.isMouseDownOnRow = false;
 
@@ -150,7 +152,9 @@ class ExcelSheet {
 
             this.scrollX = element.scrollLeft;
             this.handleDivWidth(this.scrollX);
-            this.handleXScroll();
+            if (this.scrollX > 0) {
+                this.handleXScroll();
+            }
 
             document.getElementById("demo").innerHTML = "X-Scroll " + element.scrollLeft +
                 "<br>Y-Scroll " + element.scrollTop;
@@ -178,43 +182,165 @@ class ExcelSheet {
             }).then(response => {
                 if (response.ok) {
                     alert('File uploaded successfully');
-                    this.fetchData(0, 27);
+
                 }
             });
         });
 
-        this.init();
+        this.fetchData(0, 27);
+
+        this.rowCanvas.addEventListener('click', () => {
+            this.rowCanvas.focus();
+        });
+
+        this.rowCanvas.addEventListener('click', this.highlightRow.bind(this));
+        this.isMouseClickedOnRow = false;
+        this.highlightedRowNo = 0;
+
+        this.rowCanvas.addEventListener('keydown', this.deleteRecord.bind(this));
     };
     // Outside Constructor
 
-    init() {
-        console.log("init called");
-        // Drawing Column Canvas
-        this.drawColumnBoundary(0, 30, 1820, 30);
-        this.drawColumnLines(10, 30);
-        this.nameColumns();
-
-        // Drawing Row Canvas
-        this.drawRowBoundary(43, 0, 43, 560);
-        this.drawRowLines(0, 43);
-        this.nameRows();
-
-        // Drawing Cells Canvas
-        this.drawGridColumnLines(0, 560);
-        this.drawGridRowLines(0, 1820);
-
-        this.renderData();
-    }
-
-    fetchData(startRow, rowCount = this.rowSizeArray.length) {
+    fetchData(startRow = 0, rowCount = this.rowSizeArray.length) {
         fetch(`https://localhost:7018/api/UserRecords?startRow=${startRow}&rowCount=${rowCount}`)
             .then(response => response.json())
             .then(data => {
                 data.forEach((record, rowIndex) => {
                     this.dataArray[startRow + rowIndex] = Object.values(record);
                 });
-
+                this.clearCellCanvas()
+                this.renderData(this.startRow, 0);
+                this.redrawCellCanvas();
             });
+    }
+
+    // deleteRecord(event) {
+    //     if (event.key === "Delete") {
+    //         console.log("Delete pressed", this.highlightedRowNo);
+
+    //         if (this.highlightedRowNo === null) return; // Ensure a row is selected
+
+    //         const emailId = this.dataArray[this.highlightedRowNo][0]; // Fetch EmailID from the row
+
+    //         fetch(`https://localhost:7018/api/UserRecords/${emailId}`, {
+    //             method: 'DELETE'
+    //         })
+    //             .then(response => {
+    //                 if (response.ok) {
+    //                     this.dataArray.splice(this.highlightedRowNo, 1); 
+    //                     this.clearCellCanvas(); 
+    //                     this.redrawCellCanvas();
+    //                     this.renderData();
+
+    //                 }
+    //             })
+    //             .catch(error => console.error("Error deleting record:", error));
+    //     }
+
+    //     alert('Record deleted successfully!');
+    // }
+
+    deleteRecord(event) {
+        if (event.key === "Delete") {
+            console.log("Delete pressed", this.highlightedRowNo);
+
+            if (this.highlightedRowNo === null) return; // Ensure a row is selected
+
+            const emailId = this.dataArray[this.highlightedRowNo][0]; // Fetch EmailID from the row
+
+            fetch(`https://localhost:7018/api/UserRecords/${emailId}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        this.dataArray.splice(this.highlightedRowNo, 1);
+
+                        this.clearCellCanvas();
+                        this.redrawCellCanvas();
+                        this.renderData();
+
+                        setTimeout(() => {
+                            alert('Record deleted successfully!');
+                        }, 100);
+                    }
+                })
+                .catch(error => console.error("Error deleting record:", error));
+        }
+    }
+
+
+    highlightRow(event) {
+        this.isMouseClickedOnRow = true;
+        if (this.isMouseClickedOnRow == true) {
+            let cumulativeRowHeight = 0, rowNo = 0;
+            for (let i = 0; i < this.rowSizeArray.length; i++) {
+                cumulativeRowHeight += this.rowSizeArray[i];
+                if (cumulativeRowHeight > this.mouseDownOnRowYPos) {
+                    rowNo = i;
+                    this.highlightedRowNo = i;
+                    break;
+                }
+            }
+
+            this.clearCellCanvas();
+            this.cellCtx.strokeStyle = "#107c41";
+            this.cellCtx.lineWidth = 4;
+            this.cellCtx.strokeRect(0, cumulativeRowHeight - this.rowSizeArray[rowNo],
+                this.cellCanvas.width, this.rowSizeArray[rowNo]);
+            this.cellCtx.fillStyle = "#ebebeb";
+            this.cellCtx.fillRect(0, cumulativeRowHeight - this.rowSizeArray[rowNo],
+                this.cellCanvas.width, this.rowSizeArray[rowNo]);
+            this.redrawCellCanvas();
+            this.renderData();
+        }
+    }
+
+    updateServerRecord(cellRowNo, cellColumnNo) {
+        const updatedRecord = this.dataArray[cellRowNo];
+        const emailId = updatedRecord[0];
+
+        const record = {
+            EmailID: emailId,
+            Name: updatedRecord[1],
+            Country: updatedRecord[2],
+            State: updatedRecord[3],
+            City: updatedRecord[4],
+            Telephone: updatedRecord[5],
+            AddressLine1: updatedRecord[6],
+            AddressLine2: updatedRecord[7],
+            DateOfBirth: updatedRecord[8],
+            SalaryFY2019_20: updatedRecord[9],
+            SalaryFY2020_21: updatedRecord[10],
+            SalaryFY2021_22: updatedRecord[11],
+            SalaryFY2022_23: updatedRecord[12],
+            SalaryFY2023_24: updatedRecord[13]
+        };
+
+        fetch(`https://localhost:7018/api/UserRecords/${emailId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(record)
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Record updated successfully!');
+                } else {
+                    alert('Failed to update record.');
+                }
+            });
+    }
+
+    addData(event) {
+        if (event.key === "Enter") {
+            let inputText = this.inputBox.value;
+            this.setCellPosInfo(event);
+            let cellRowNo = this.cellPosInfo.cellRowNo;
+            let cellColumnNo = this.cellPosInfo.cellColumnNo;
+            this.dataArray[cellRowNo][cellColumnNo] = inputText;
+            this.updateServerRecord(cellRowNo, cellColumnNo);
+        }
     }
 
     renderData(startRow = 0, startCol = 0) {
@@ -295,8 +421,6 @@ class ExcelSheet {
     handleXScroll() {
 
         // Horizontal scrolling Column Canvas
-        // console.log(this.colSizeArray.length);
-        // console.log(this.scrollX)
         this.clearColCanvas();
         this.redrawColCanvas(this.scrollX);
         let cumulativeColWidtht1 = 0;
@@ -500,16 +624,6 @@ class ExcelSheet {
         // this.drawCellBorder("#bcbcbc")
     }
 
-    addData(event) {
-        if (event.key === "Enter") {
-            let inputText = this.inputBox.value;
-            this.setCellPosInfo(event);
-            let cellRowNo = this.cellPosInfo.cellRowNo;
-            let cellColumnNo = this.cellPosInfo.cellColumnNo;
-            this.dataArray[cellRowNo][cellColumnNo] = inputText;
-        }
-    }
-
     getInputBox(event) {
         this.isMouseDownOnCellCanvas = true;
         let inputBoxValue = this.inputBox.value;
@@ -692,6 +806,7 @@ class ExcelSheet {
     }
 
     resizeRowHeight() {
+        this.isMouseMoveOnRow = true;
         let cumulativeRowHeight = 0;
         let rowIndex = -1;
 
@@ -1110,33 +1225,29 @@ class ExcelSheet {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const myExcelSheet = new ExcelSheet();
-});
+const myExcelSheet = new ExcelSheet();
 
-// const myExcelSheet = new ExcelSheet();
+// Drawing Column Canvas
+myExcelSheet.drawColumnBoundary(0, 30, 1820, 30);
+myExcelSheet.drawColumnLines(10, 30);
+myExcelSheet.nameColumns();
 
-// // Drawing Column Canvas
-// myExcelSheet.drawColumnBoundary(0, 30, 1820, 30);
-// myExcelSheet.drawColumnLines(10, 30);
-// myExcelSheet.nameColumns();
+// Drawing Row Canvas
+myExcelSheet.drawRowBoundary(43, 0, 43, 560);
+myExcelSheet.drawRowLines(0, 43);
+myExcelSheet.nameRows();
 
-// // Drawing Row Canvas
-// myExcelSheet.drawRowBoundary(43, 0, 43, 560);
-// myExcelSheet.drawRowLines(0, 43);
-// myExcelSheet.nameRows();
+// Drawing Cells Canvas
+myExcelSheet.drawGridColumnLines(0, 560);
+myExcelSheet.drawGridRowLines(0, 1820);
 
-// // Drawing Cells Canvas
-// myExcelSheet.drawGridColumnLines(0, 560);
-// myExcelSheet.drawGridRowLines(0, 1820);
+// let nums = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
 
-// // let nums = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+// for(let i=0;i<100;i++){
+//     for(let j=0;j<100;j++){
+//         let idx = Math.floor(Math.random()*nums.length);
+//         myExcelSheet.dataArray[i][j] = nums[idx];
+//     }
+// }
 
-// // for(let i=0;i<100;i++){
-// //     for(let j=0;j<100;j++){
-// //         let idx = Math.floor(Math.random()*nums.length);
-// //         myExcelSheet.dataArray[i][j] = nums[idx];
-// //     }
-// // }
-
-// myExcelSheet.renderData();
+myExcelSheet.renderData();

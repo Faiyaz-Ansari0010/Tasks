@@ -17,6 +17,10 @@ body {
     width: 43px;
 }
 
+#row-canvas:focus {
+    outline: none;
+}
+
 #outer-cell-container {
     position: relative;
     bottom: 564px;
