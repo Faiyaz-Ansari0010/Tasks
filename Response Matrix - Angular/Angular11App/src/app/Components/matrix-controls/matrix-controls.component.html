@@ -1,0 +1,16 @@
+<div class="matrix-controls">
+    <div class="matrix-info">
+      <p>Response Matrix <span>{{ isLocked ? '(Locked)' : '(Unlocked)' }}</span></p>
+    </div>
+    <div class="control-buttons">
+      <button class="unlock-btn" (click)="toggleLock()">
+          <img [src]="isLocked ? 'assets/locked-img.png' : 'assets/unlocked-img.PNG'">
+          <span>{{ isLocked ? 'UNLOCK' : 'LOCK' }}</span>
+      </button>
+      <button class="preview-btn" (click) = "handleSaveClk()">
+          <img src="assets/preview-img.PNG">
+          <span>SAVE AND PREVIEW</span>
+      </button>
+    </div>
+  </div>
+  

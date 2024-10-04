@@ -1,0 +1,25 @@
+.response-properties {
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+    }
+  
+    .selection-options, 
+    .single-selection-options,
+    .multiple-selection-options {
+      margin-left: 16px;
+      margin-bottom: 12px;
+  
+      label {
+        display: inline-block;
+        margin-right: 16px;
+      }
+  
+      select, input[disabled] {
+        color: #aaa;  // To indicate the element is disabled
+        cursor: not-allowed;
+      }
+    }
+  }
+  

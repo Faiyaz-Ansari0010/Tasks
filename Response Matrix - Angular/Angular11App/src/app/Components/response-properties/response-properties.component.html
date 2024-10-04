@@ -1,0 +1,58 @@
+<div class="response-properties">
+    <label>Set response properties</label>
+  
+    <div class="selection-options">
+      <label>
+        <input 
+          type="radio" 
+          name="selectionType" 
+          [(ngModel)]="selectionType" 
+          value="single" 
+          (change)="onSelectionTypeChange()">
+        Single Selection
+      </label>
+  
+      <label>
+        <input 
+          type="radio" 
+          name="selectionType" 
+          [(ngModel)]="selectionType" 
+          value="multiple" 
+          (change)="onSelectionTypeChange()">
+        Multiple Selection
+      </label>
+    </div>
+  
+    <div class="single-selection-options">
+      <label>
+        <input 
+          type="radio" 
+          name="singleOption" 
+          [(ngModel)]="singleOption" 
+          value="perRow" 
+          [disabled]="selectionType === 'multiple'">
+        Per Row
+      </label>
+  
+      <label>
+        <input 
+          type="radio" 
+          name="singleOption" 
+          [(ngModel)]="singleOption" 
+          value="perColumn" 
+          [disabled]="selectionType === 'multiple'">
+        Per Column
+      </label>
+    </div>
+  
+    <div class="multiple-selection-options">
+      <label for="maxResponses">Maximum responses that can be selected</label>
+      <select 
+        id="maxResponses" 
+        [(ngModel)]="maxResponses" 
+        [disabled]="selectionType === 'single'">
+        <option *ngFor="let num of maxResponsesOptions" [value]="num">{{ num }}</option>
+      </select>
+    </div>
+  </div>
+  

@@ -1,0 +1,77 @@
+.matrix-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 24px;
+  
+    .matrix-info {
+      p {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0;
+  
+        span {
+          margin-left: 5px;
+          font-size: 12px;
+          font-weight: normal;
+          color: #999;
+        }
+      }
+    }
+
+//     <div class="matrix-controls">
+//     <div class="matrix-info">
+//       <p>Response Matrix <span>(Locked)</span></p>
+//     </div>
+// <div class="control-buttons">
+//     <button class="unlock-btn">
+//         <img src="assets/lock-img.PNG">
+//         UNLOCK
+//     </button>
+//     <button class="preview-btn">
+//         <img src="assets/preview-img.PNG">
+//         SAVE AND PREVIEW
+//     </button>
+//   </div>
+//   </div>
+
+    .control-buttons {
+      display: flex;
+      gap: 16px;
+      margin-right: 10px;
+  
+      button {
+        padding: 10px 15px;
+        border: 1px solid #7994B3;
+        background-color: #E2F8FE;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        justify-content: space-around;
+  
+        &.unlock-btn {
+            padding: 0;
+            width: 109px;
+            height: 28px;
+            img{
+                margin-right: -5px;
+                width: 25px;
+                height: 22px;
+            }
+        }
+  
+        &.preview-btn {
+            padding: 0;
+            width: 193px;
+            height: 28px;
+            img{
+                margin-right: -5px;
+                width: 35px;
+                height: 22px;
+            }
+        }
+      }
+    }
+  }
+  
