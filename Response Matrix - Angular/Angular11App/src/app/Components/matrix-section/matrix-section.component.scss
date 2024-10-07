@@ -1,0 +1,48 @@
+.matrix-container {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    gap: 0;
+    background-color: white;
+    margin-left: 24px;
+    margin-right: 32px;
+    padding-top: 45px;
+    padding-left: 24px;
+    padding-right: 32px;
+}
+
+.matrix-cell {
+    padding: 10px;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header {
+    text-align: center;
+    font-weight: bold;
+}
+
+.header-input {
+    border: none;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    width: 100%;
+    outline: none;
+}
+
+.cell-input {
+    border: none;
+    border-bottom: 1px solid #ddd;
+    width: 50px;
+    margin-left: 5px;
+    outline: none;
+}
+
+.radio-input {
+    margin-right: 10px;
+}
+
+.matrix-cell input[type="text"] {
+    font-size: 14px;
+}

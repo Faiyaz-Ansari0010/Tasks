@@ -1,0 +1,19 @@
+<div class="column-width-section">
+  <label for="columnSelect">Set column width</label>
+  <div class="column-input-group">
+    <select id="columnSelect" class="column-dropdown">
+      <option value="">Select column</option>
+      <option value="1">Column 1</option>
+      <option value="2">Column 2</option>
+      <option value="3">Column 3</option>
+    </select>
+  </div>
+
+  <input
+  class="columnWidth"
+    type="number"
+    [(ngModel)]="columnWidth"
+    aria-label="Column width in pixels"
+  />
+  <span class="unit">px</span>
+</div>

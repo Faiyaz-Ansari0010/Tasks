@@ -9,6 +9,8 @@ import { MatrixControlsComponent } from './Components/matrix-controls/matrix-con
 import { QuestionInfoComponent } from './Components/question-info/question-info.component';
 import { QuestionNameComponent } from './Components/question-name/question-name.component';
 import { ResponsePropertiesComponent } from './Components/response-properties/response-properties.component';
+import { ColumnWidthComponent } from './Components/column-width/column-width.component';
+import { MatrixSectionComponent } from './Components/matrix-section/matrix-section.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +21,8 @@ import { ResponsePropertiesComponent } from './Components/response-properties/re
     QuestionInfoComponent,
     QuestionNameComponent,
     ResponsePropertiesComponent,
+    ColumnWidthComponent,
+    MatrixSectionComponent,
   ],
   imports: [
     BrowserModule,
