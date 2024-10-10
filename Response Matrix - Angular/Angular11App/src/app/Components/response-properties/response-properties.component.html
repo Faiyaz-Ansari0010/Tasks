@@ -2,24 +2,24 @@
   <label>Set response properties</label>
 
   <div class="selection-options">
-    <label>
+    <label style="cursor: pointer">
       <input
         type="radio"
         name="selectionType"
         [(ngModel)]="selectionType"
         value="single"
-        (change)="onSelectionTypeChange()"
+        (change)="onSelectionTypeChange('single')"
       />
       Single Selection
     </label>
 
-    <label class="mltpl-select">
+    <label class="mltpl-select" style="cursor: pointer">
       <input
         type="radio"
         name="selectionType"
         [(ngModel)]="selectionType"
         value="multiple"
-        (change)="onSelectionTypeChange()"
+        (change)="onSelectionTypeChange('multiple')"
       />
       Multiple Selection
     </label>

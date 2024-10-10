@@ -19,25 +19,39 @@
     margin-right: 20px;
     position: relative;
     width: 420px;
-    overflow-x: auto; 
+    overflow-x: auto;
 }
+
+.matrix-cell input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.matrix-cell input[type="checkbox"]:checked {
+    background-color: grey;
+    border-color: #1F7A54;
+}
+
 
 .matrix-row {
     display: flex;
-    width: max-content; /* Ensure row size adapts to content, allowing horizontal scroll */
+    width: max-content;
+    /* Ensure row size adapts to content, allowing horizontal scroll */
 }
 
 .matrix-cell {
     border: 1px solid #e0e0e0;
     padding: 10px;
     text-align: center;
-    width: 68px; 
- }
+    width: 38px;
+}
 
 .matrix-header {
     border: none;
     border-bottom: 1px solid #e0e0e0;
-    width: 100%; /* Input spans the full width of its parent (matrix-cell) */
+    width: 100%;
+    /* Input spans the full width of its parent (matrix-cell) */
     padding: 5px;
     text-align: center;
     box-sizing: border-box;
@@ -46,7 +60,8 @@
 .matrix-input {
     border: none;
     border-bottom: 1px solid #e0e0e0;
-    width: 100%; /* Input spans the full width of its parent (matrix-cell) */
+    width: 100%;
+    /* Input spans the full width of its parent (matrix-cell) */
     margin-left: 10px;
     box-sizing: border-box;
 }

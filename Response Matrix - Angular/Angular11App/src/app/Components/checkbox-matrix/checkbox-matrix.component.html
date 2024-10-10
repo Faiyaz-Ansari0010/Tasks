@@ -1,0 +1,56 @@
+<div class="matrix-container">
+    <span>Matrix Section*</span>
+    <div class="matrix-table">
+      <div class="matrix-row" *ngFor="let row of rows; let rowIndex = index">
+        <div
+          class="matrix-cell"
+          *ngFor="let col of columns; let colIndex = index"
+        >
+          <ng-container *ngIf="rowIndex === 0">
+            <input
+              type="text"
+              [(ngModel)]="columns[colIndex]"
+              class="matrix-header"
+              placeholder="Column {{columns[colIndex]}}"
+            />
+          </ng-container>
+  
+          <ng-container *ngIf="colIndex === 0 && rowIndex !== 0">
+            <input
+              type="text"
+              [(ngModel)]="rows[rowIndex]"
+              class="matrix-header"
+              placeholder="Row {{ rowIndex + 1 }}"
+            />
+          </ng-container>
+  
+          <ng-container *ngIf="colIndex !== 0 && rowIndex !== 0">
+            <input type="checkbox" name="row{{ rowIndex }}" />
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  
+    <div class="action-buttons-col">
+      <button class="add-column" (click)="addColumn()">+ Add column</button>
+      <button
+        class="remove-column"
+        (click)="removeColumn()"
+        [disabled]="columns.length <= 3"
+      >
+        × Remove column
+      </button>
+    </div>
+  
+    <div class="action-buttons-row">
+      <button class="add-row" (click)="addRow()">+ Add row</button>
+      <button
+        class="remove-row"
+        (click)="removeRow()"
+        [disabled]="rows.length <= 3"
+      >
+        × Remove row
+      </button>
+    </div>
+  </div>
+  
