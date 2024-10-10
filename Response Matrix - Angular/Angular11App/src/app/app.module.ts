@@ -11,6 +11,9 @@ import { QuestionNameComponent } from './Components/question-name/question-name.
 import { ResponsePropertiesComponent } from './Components/response-properties/response-properties.component';
 import { ColumnWidthComponent } from './Components/column-width/column-width.component';
 import { MatrixSectionComponent } from './Components/matrix-section/matrix-section.component';
+import { SetHeadersComponent } from './Components/set-headers/set-headers.component';
+import { FeedbackComponent } from './Components/feedback/feedback.component';
+import { CheckboxMatrixComponent } from './Components/checkbox-matrix/checkbox-matrix.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +26,9 @@ import { MatrixSectionComponent } from './Components/matrix-section/matrix-secti
     ResponsePropertiesComponent,
     ColumnWidthComponent,
     MatrixSectionComponent,
+    SetHeadersComponent,
+    FeedbackComponent,
+    CheckboxMatrixComponent,
   ],
   imports: [
     BrowserModule,

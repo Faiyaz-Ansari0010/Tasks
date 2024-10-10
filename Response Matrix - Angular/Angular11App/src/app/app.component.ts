@@ -6,5 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  selectionType: string = 'single';  
 
+  onSelectionTypeChange(selectionType: string): void {
+    this.selectionType = selectionType;
+  }
 }
