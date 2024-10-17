@@ -3,17 +3,19 @@
 <app-matrix-controls></app-matrix-controls>
 <app-question-info></app-question-info>
 <app-question-name></app-question-name>
+
 <app-response-properties
   (selectionTypeChange)="onSelectionTypeChange($event)"
 ></app-response-properties>
 <app-column-width></app-column-width>
 
-<div *ngIf="selectionType === 'single'">
+<div *ngIf="selectionType === 'single'; else multipleTemplate">
   <app-matrix-section></app-matrix-section>
 </div>
-<div *ngIf="selectionType === 'multiple'">
+<ng-template #multipleTemplate>
   <app-checkbox-matrix></app-checkbox-matrix>
-</div>
+</ng-template>
 
 <app-set-headers></app-set-headers>
 <app-feedback></app-feedback>
+    

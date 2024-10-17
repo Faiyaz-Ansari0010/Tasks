@@ -1,0 +1,47 @@
+label, select{
+    cursor: pointer;
+}
+
+.response-properties {
+    background-color: white;
+    margin-left: 24px;
+    margin-right: 32px;
+    padding-top: 45px;
+    padding-left: 24px;
+  
+    .selection-options{
+      font-weight: 500;
+      margin-top: 12px;
+      display: flex;
+      .mltpl-select{
+        margin-left: 40px;
+      }
+    }
+  
+    .single-selection-options{
+      font-weight: 500;
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+      margin-left: 30px;
+  
+      .perColumn{
+        margin-top: 15px;
+      }
+    }
+  
+    .multiple-selection-options{
+      position: relative;
+      left: 205px;
+      bottom: 55px;
+    }
+  
+    select[disabled], input[disabled] {
+      color: #aaa;  // To indicate the element is disabled
+      cursor: not-allowed;
+    }
+  }
+   
+  input[type="radio"] {
+    accent-color: #1F7A54; 
+  }

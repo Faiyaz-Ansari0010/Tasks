@@ -1,0 +1,36 @@
+.question-name {
+    margin-left: 24px;
+    margin-right: 32px;
+    margin-top: 24px;
+    padding-top: 24px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 5px;
+    background-color: white;
+  
+    label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #666666;
+    }
+  
+    input {
+      margin-top: 4px;
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid #cfcfcf;
+      padding: 0.5rem 0;
+      font-size: 1rem;
+      color: #4f4f4f;
+  
+      &:focus {
+        outline: none;
+        border-bottom: 1px solid #4f4f4f;
+      }
+  
+      &::placeholder {
+      font-size: 16px;
+      color: #666666;
+      }
+    }
+  }

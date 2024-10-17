@@ -1,0 +1,52 @@
+.column-width-section {
+    background-color: white;
+    margin-left: 24px;
+    margin-right: 32px;
+    padding-top: 45px;
+    padding-left: 24px;
+    padding-bottom: 5px;
+}
+
+.column-width-section label {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 550;
+}
+
+.column-input-group {
+    display: flex;
+    align-items: center;
+}
+
+.column-dropdown {
+    border: none;
+    border-bottom: 1px solid #000;
+    padding: 5px 0;
+    font-size: 16px;
+    width: 150px;
+    margin-right: 10px;
+    cursor: pointer;
+    width: 270px;
+}
+
+.column-dropdown:focus {
+    outline: none;
+    border-bottom: 2px solid #000;
+}
+
+.columnWidth {
+    position: relative;
+    border: none;
+    border-bottom: 1px solid #000;
+    left: 290px;
+    bottom: 21px;
+    width: 35px;
+}
+
+.unit {
+    position: relative;
+    left: 300px;
+    bottom: 25px
+}

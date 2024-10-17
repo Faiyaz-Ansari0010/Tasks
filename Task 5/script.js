@@ -209,44 +209,18 @@ class ExcelSheet {
                     this.dataArray[startRow + rowIndex] = Object.values(record);
                 });
                 this.clearCellCanvas()
-                this.renderData(this.startRow, 0);
+                this.renderData(this.newRowStart, this.newColStart);
                 this.redrawCellCanvas();
             });
     }
-
-    // deleteRecord(event) {
-    //     if (event.key === "Delete") {
-    //         console.log("Delete pressed", this.highlightedRowNo);
-
-    //         if (this.highlightedRowNo === null) return; // Ensure a row is selected
-
-    //         const emailId = this.dataArray[this.highlightedRowNo][0]; // Fetch EmailID from the row
-
-    //         fetch(`https://localhost:7018/api/UserRecords/${emailId}`, {
-    //             method: 'DELETE'
-    //         })
-    //             .then(response => {
-    //                 if (response.ok) {
-    //                     this.dataArray.splice(this.highlightedRowNo, 1); 
-    //                     this.clearCellCanvas(); 
-    //                     this.redrawCellCanvas();
-    //                     this.renderData();
-
-    //                 }
-    //             })
-    //             .catch(error => console.error("Error deleting record:", error));
-    //     }
-
-    //     alert('Record deleted successfully!');
-    // }
 
     deleteRecord(event) {
         if (event.key === "Delete") {
             console.log("Delete pressed", this.highlightedRowNo);
 
-            if (this.highlightedRowNo === null) return; // Ensure a row is selected
+            if (this.highlightedRowNo === null) return;
 
-            const emailId = this.dataArray[this.highlightedRowNo][0]; // Fetch EmailID from the row
+            const emailId = this.dataArray[this.highlightedRowNo][0];
 
             fetch(`https://localhost:7018/api/UserRecords/${emailId}`, {
                 method: 'DELETE'
@@ -267,7 +241,6 @@ class ExcelSheet {
                 .catch(error => console.error("Error deleting record:", error));
         }
     }
-
 
     highlightRow(event) {
         this.isMouseClickedOnRow = true;
@@ -295,7 +268,7 @@ class ExcelSheet {
         }
     }
 
-    updateServerRecord(cellRowNo, cellColumnNo) {
+    updateServerRecord(cellRowNo, flag = false) {
         const updatedRecord = this.dataArray[cellRowNo];
         const emailId = updatedRecord[0];
 
@@ -323,10 +296,11 @@ class ExcelSheet {
             },
             body: JSON.stringify(record)
         })
+
             .then(response => {
-                if (response.ok) {
+                if (response.ok && flag == false) {
                     alert('Record updated successfully!');
-                } else {
+                } else if (flag == false) {
                     alert('Failed to update record.');
                 }
             });
@@ -339,7 +313,7 @@ class ExcelSheet {
             let cellRowNo = this.cellPosInfo.cellRowNo;
             let cellColumnNo = this.cellPosInfo.cellColumnNo;
             this.dataArray[cellRowNo][cellColumnNo] = inputText;
-            this.updateServerRecord(cellRowNo, cellColumnNo);
+            this.updateServerRecord(cellRowNo);
         }
     }
 
@@ -371,6 +345,38 @@ class ExcelSheet {
             }
             cumulativeColumnWidth = -1 * this.colSizeArray[0];
         }
+    }
+
+    resizeColumnWidth() {
+        let cumulativeColumnWidth = 0;
+        let columnIndex = -1;
+
+        for (let i = 0; i < this.colSizeArray.length; i++) {
+            cumulativeColumnWidth += this.colSizeArray[i];
+
+            if (this.mouseDownOnColumnXPos < (cumulativeColumnWidth + 5) &&
+                this.mouseDownOnColumnXPos > (cumulativeColumnWidth - 5)) {
+                columnIndex = i;
+                break;
+            }
+        }
+
+        let extendedColumnWidth = this.mouseMoveOnColumnXPos - this.mouseDownOnColumnXPos;
+
+        this.colSizeArray[columnIndex] += extendedColumnWidth;
+
+        if (this.colSizeArray[columnIndex] < 10) {
+            this.isMouseDownOnColumn = false;
+        }
+
+        this.mouseDownOnColumnXPos = this.mouseMoveOnColumnXPos;
+
+        this.clearColumnAndCellCanvas();
+        this.redrawColumnAndCellCanvas();
+        this.drawCellBorder();
+        this.highlightElement(this.cellsToSelect);
+        this.renderData();
+        this.inputBox.style.width = this.colSizeArray[this.cellPosInfo.cellColumnNo] + "px";
     }
 
     handleYScroll() {
@@ -501,12 +507,17 @@ class ExcelSheet {
 
         let findInputValue = this.findInputBox.value;
         let replaceInputValue = this.replaceInputBox.value;
+        let flag = false;
         for (let i = 0; i < this.dataArray.length; i++) {
             for (let j = 0; j < this.dataArray[i].length; j++) {
                 if (this.dataArray[i][j] == findInputValue) {
                     this.dataArray[i][j] = replaceInputValue;
                     let cellNo = [i, j];
                     this.cellsToReplace.push(cellNo);
+                    this.updateServerRecord(i, flag);
+                    if (flag == false) {
+                        flag = true;
+                    }
                 }
             }
         }
@@ -941,7 +952,6 @@ class ExcelSheet {
         let xValues = [];
         let yValues = [];
 
-        // Populate xValues based on selectedCellsArray
         for (let i = 0; i < this.selectedCellsArray.length; i++) {
             if (!xValues.includes(this.selectedCellsArray[i].rowNo + 1)) {
                 xValues.push(this.selectedCellsArray[i].rowNo + 1);
@@ -964,12 +974,11 @@ class ExcelSheet {
             yValues.push(myObj);
         }
 
-        // Create the line chart
         this.draw = new Chart("graphCanvas", {
             type: "line",
             data: {
                 labels: xValues,
-                datasets: yValues  // Assign yValues to the datasets field
+                datasets: yValues
             },
             options: {
                 responsive: false
@@ -1073,38 +1082,6 @@ class ExcelSheet {
         this.nameColumns();
         this.drawGridRowLines(0, 1820);
         this.drawColumnBoundary(0, 30, 1820, 30);
-    }
-
-    resizeColumnWidth() {
-        let cumulativeColumnWidth = 0;
-        let columnIndex = -1;
-
-        for (let i = 0; i < this.colSizeArray.length; i++) {
-            cumulativeColumnWidth += this.colSizeArray[i];
-
-            if (this.mouseDownOnColumnXPos < (cumulativeColumnWidth + 5) &&
-                this.mouseDownOnColumnXPos > (cumulativeColumnWidth - 5)) {
-                columnIndex = i;
-                break;
-            }
-        }
-
-        let extendedColumnWidth = this.mouseMoveOnColumnXPos - this.mouseDownOnColumnXPos;
-
-        this.colSizeArray[columnIndex] += extendedColumnWidth;
-
-        if (this.colSizeArray[columnIndex] < 10) {
-            this.isMouseDownOnColumn = false;
-        }
-
-        this.mouseDownOnColumnXPos = this.mouseMoveOnColumnXPos;
-
-        this.clearColumnAndCellCanvas();
-        this.redrawColumnAndCellCanvas();
-        this.drawCellBorder();
-        this.highlightElement(this.cellsToSelect);
-        this.renderData();
-        this.inputBox.style.width = this.colSizeArray[this.cellPosInfo.cellColumnNo] + "px";
     }
 
     drawColumnBoundary(moveToX, moveToY, lineToX, lineToY) {

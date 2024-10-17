@@ -1,0 +1,11 @@
+@font-face {
+  font-family: 'Quicksand';
+  src: url('./assets/Quicksand.ttf')
+}
+
+body {
+  font-family: 'Quicksand';
+  margin: 0;
+  padding: 0;
+  background-color: #EEEEEE;
+}
