@@ -19,7 +19,7 @@
     padding: 10px;
     margin-right: 20px;
     position: relative;
-    width: 420px;
+    width: 520px;
     overflow-x: auto;
 }
 
@@ -66,6 +66,10 @@
     color: #fff;
     cursor: pointer;
     font-size: 14px;
+}
+
+.add-column, .remove-column{
+    margin-left: 100px;
 }
 
 button:disabled {

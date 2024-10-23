@@ -7,6 +7,7 @@ export default function MatrixSingle() {
     "Column 2",
     "Column 3",
   ]);
+
   const [rows, updateRow] = useState(["Row 1", "Row 2"]);
 
   // removeColumn() {
